@@ -92,45 +92,69 @@ class FriendshipCommunity:
         frame = tkinter.Frame(window)
 #to save my frame
         frame.pack()
-#saving user info
-        user_info_frame = tkinter.LabelFrame(frame, text= "User_Information")
-        user_info_frame.grid(row=0 , column= 0 )
+        
+        ##################################################
+        #           start by Personal info               #
+        ##################################################
 
-#create full_name label
-        full_name_label = tkinter.Label(user_info_frame, text="Full name")
-#render label on the screen
+#saving personal info
+        personal_info_frame = tkinter.LabelFrame(frame, text= "Personal_Information")
+        personal_info_frame.grid(row=0 , column= 0 )
+
+#create full_name label , inputs and render it
+        full_name_label = tkinter.Label(personal_info_frame, text="Full name")
+        full_name_input = tkinter.Entry(personal_info_frame)
         full_name_label.grid(row = 0, column = 0)
-#create the input for full_name label
-        full_name_input = tkinter.Entry(user_info_frame)
-#render input on the screen
-        full_name_input.grid(row = 1, column= 0,padx=20,pady=20)
-#create gender label
-        gender = tkinter.Label(user_info_frame, text="Gender")
-#render label
-        gender.grid(row= 0, column= 2 )
-#create combobox
-        gender_combobox = ttk.Combobox(user_info_frame, values=["Male", "Female", "rather not say"])
-#render combobox
-        gender_combobox.grid(row=1, column= 2)
-#create age_label
-        age_label = tkinter.Label(user_info_frame, text="Age")
-#render age_label
-        age_label.grid(row=0 , column=3)
-#create age spinbox
-        age_spinbox = tkinter.Spinbox(user_info_frame, from_=12 , to= 90)
-#render age spinbox
-        age_spinbox.grid(row=1, column=3)
-#create nationality label
-        nationality_label = tkinter.Label(user_info_frame, text="Nationality")
-#render nationality label
-        nationality_label.grid(row=2, column=0)
+        full_name_input.grid(row = 1, column= 0)
+#create gender label , inputs and render it
+        gender = tkinter.Label(personal_info_frame, text="Gender")
+        gender_combobox = ttk.Combobox(personal_info_frame, values=["Male", "Female", "rather not say"])
+        gender.grid(row= 0, column= 1 )
+        gender_combobox.grid(row=1, column= 1)
+#create age_label, input and render it
+        age_label = tkinter.Label(personal_info_frame, text="Age")
+        age_spinbox = tkinter.Spinbox(personal_info_frame, from_=12 , to= 90)
+        age_label.grid(row=0 , column=2)
+        age_spinbox.grid(row=1, column=2)
+#create nationality label, input fetching and render it
+        nationality_label = tkinter.Label(personal_info_frame, text="Nationality")
 ####fetching nationality api####
         req = requests.get("https://freetestapi.com/api/v1/countries")
         response =[county["name"] for county in req.json()[:150]]
-#create nationality input
-        nationality_input = ttk.Combobox(user_info_frame,values=response)
-#render nationality input
-        nationality_input.grid(row=3, column=0)
+        nationality_input = ttk.Combobox(personal_info_frame,values=response)
+        nationality_label.grid(row=2, column=0)
+        nationality_input.grid(row= 3, column= 0)
+#create hobits_label , inputs and render it
+        hobits_label = tkinter.Label(personal_info_frame, text="Hobits")
+        hobits_input = tkinter.Entry(personal_info_frame)
+        hobits_label.grid(row = 2, column = 1)
+        hobits_input.grid(row = 3, column= 1)
+#create bio_label , input and render it 
+        bio_label = tkinter.Label(personal_info_frame, text="Bio")
+        bio_input = tkinter.Entry(personal_info_frame)
+        bio_label.grid(row = 2, column = 2)
+        bio_input.grid(row = 3, column= 2)
+
+#set padding for personal inputs
+        for wedget in personal_info_frame.winfo_children():
+            wedget.grid_configure(padx=10, pady= 5)
+
+        ##################################################
+        #           start by account info                #
+        ##################################################
+
+        account_info_frame = tkinter.LabelFrame(frame, text= "Account_Information")
+        account_info_frame.grid(row=1 , column= 0)
+        #create email label , inputs and render it
+        email_label = tkinter.Label(account_info_frame, text="Email")
+        email_input = tkinter.Entry(account_info_frame)
+        email_label.grid(row = 2, column = 1)
+        email_input.grid(row = 3, column= 1)
+#create password_label , inputs and render it
+        password_label = tkinter.Label(account_info_frame, text="Password")
+        password_input = tkinter.Entry(account_info_frame)
+        password_label.grid(row = 2, column = 2)
+        password_input.grid(row = 3, column= 2)
         
 #to run my window component
         window.mainloop()
