@@ -1,4 +1,6 @@
+import http.client
 import tkinter
+import requests
 from tkinter import ttk
 class UserNode:
     def __init__(self,friendsData) -> None:
@@ -7,7 +9,7 @@ class UserNode:
         self.gender = friendsData["gender"]
         self.email = friendsData["email"] 
         self.password = friendsData["password"]
-        self.address = friendsData["address"] 
+        self.nationality = friendsData["nationality"] 
         self.hobits = friendsData["hobits"]
         self.bio = friendsData["bio"]
         self.following = 0
@@ -68,7 +70,7 @@ class FriendsList:
                     "gender" : current.gender,
                     "email" : current.email,
                     "password" : current.password,
-                    "address" : current.address,
+                    "nationality" : current.nationality,
                     "hobits" : current.hobits,
                     "bio" : current.bio,
                 }
@@ -118,14 +120,18 @@ class FriendshipCommunity:
         age_spinbox = tkinter.Spinbox(user_info_frame, from_=12 , to= 90)
 #render age spinbox
         age_spinbox.grid(row=1, column=3)
-#create address label
-        address_label = tkinter.Label(user_info_frame, text="Address")
-#render address label
-        address_label.grid(row=2, column=0)
-#create address input
-        address_input = tkinter.Entry(user_info_frame)
-#render address input
-        address_input.grid(row=3, column=0)
+#create nationality label
+        nationality_label = tkinter.Label(user_info_frame, text="Nationality")
+#render nationality label
+        nationality_label.grid(row=2, column=0)
+####fetching nationality api####
+        req = requests.get("https://freetestapi.com/api/v1/countries")
+        response =[county["name"] for county in req.json()[:150]]
+#create nationality input
+        nationality_input = ttk.Combobox(user_info_frame,values=response)
+#render nationality input
+        nationality_input.grid(row=3, column=0)
+        
 #to run my window component
         window.mainloop()
 
@@ -133,3 +139,4 @@ def main():
     friend = FriendshipCommunity()
     friend.createUser()
 main()
+    
