@@ -1,3 +1,4 @@
+import tkinter
 class UserNode:
     def __init__(self,friendsData) -> None:
         self.fullname = friendsData["fullname"]
@@ -73,8 +74,19 @@ class FriendsList:
             print(friends)
 
 ##################################################
-
 class FriendshipCommunity:
     def __init__(self) -> None:
         self.adj_list = {}
+
+    def createUser(self):
+#parent component
+        window = tkinter.Tk()
+#title for my GUI program
+        window.title("Friendship Community")
+#nested component in my window
+        frame = tkinter.Frame(window)
+#to save my frame
+        frame.pack()
+#to run my window component
+        window.mainloop()
 
