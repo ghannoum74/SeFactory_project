@@ -1,5 +1,3 @@
-import tkinter
-import json
 class UserNode:
     def __init__(self,friendsData) -> None:
         self.fullname = friendsData["fullname"]
@@ -74,38 +72,9 @@ class FriendsList:
                 current = current.next
             print(friends)
 
-def main():
-    ll = FriendsList()
-    ll.getSize()
-    ll.displayFriends()
-    print("*-----------------------*")
-    ll.removeFriend("ahmad")
-    ll.displayFriends()
-    print("*-----------------------*")
-    friendData = {"fullname":"ahmad","age":16,"email":"ahmad123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
-    ll.addFriend(friendData)
-    Data = {"fullname":"samir","age":16,"email":"samir123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
-    ll.addFriend(Data)
-    friend = {"fullname":"mhamad","age":16,"email":"mhamad123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
-    ll.addFriend(friend)
-    print("*-----------------------*")
-    ll.displayFriends()
-    print("*-----------------------*")
-    ll.getSize()
-    print("*-----------------------*")
-    ll.removeFriend("ahmad123@gmail.com")
-    print("*-----------------------*")
-    ll.getSize()
-    print("*-----------------------*")
-    ll.removeFriend("dsas123@gmail.com")
-    print("*-----------------------*")
-    ll.displayFriends()
-    print("*-----------------------*")
-    ll.removeFriend("samir123@gmail.com")
-    print("*-----------------------*")
-    ll.removeFriend("mhamad123@gmail.com")
-    print("*-----------------------*")
-    ll.displayFriends()
-    print("*-----------------------*")
-    ll.getSize()
-main()
+##################################################
+
+class FriendshipCommunity:
+    def __init__(self) -> None:
+        self.adj_list = {}
+
