@@ -89,9 +89,9 @@ class FriendshipCommunity:
 #title for my GUI program
         window.title("Friendship Community")
 #nested component in my window
-        frame = tkinter.Frame(window)
+        frame = tkinter.Frame(window, padx=20, pady= 20)
 #to save my frame
-        frame.pack()
+        frame.pack(padx=100, pady=100)
         
         ##################################################
         #           start by Personal info               #
@@ -99,7 +99,7 @@ class FriendshipCommunity:
 
 #saving personal info
         personal_info_frame = tkinter.LabelFrame(frame, text= "Personal_Information")
-        personal_info_frame.grid(row=0 , column= 0 )
+        personal_info_frame.grid(row=0 , column= 0 ,padx=10, pady=10)
 
 #create full_name label , inputs and render it
         full_name_label = tkinter.Label(personal_info_frame, text="Full name")
@@ -144,7 +144,7 @@ class FriendshipCommunity:
         ##################################################
 
         account_info_frame = tkinter.LabelFrame(frame, text= "Account_Information")
-        account_info_frame.grid(row=1 , column= 0,sticky="news")
+        account_info_frame.grid(row=1 , column= 0,sticky="news",padx=10, pady=10)
 #create email label , inputs and render it
         email_label = tkinter.Label(account_info_frame, text="Email")
         email_input = tkinter.Entry(account_info_frame)
@@ -168,10 +168,18 @@ class FriendshipCommunity:
         ##################################################
 
         terms_conditions_frame = tkinter.LabelFrame(frame, text= "Terms & Conditions")
-        terms_conditions_frame.grid(row=2 , column= 0,sticky="news")
+        terms_conditions_frame.grid(row=2 , column= 0,sticky="news",padx=10, pady=10)
 #create terms_btn_label , inputs and render it
         terms_btn_label = tkinter.Checkbutton(terms_conditions_frame, text="Accept all terms and conditions")
         terms_btn_label.grid(row = 0, column = 0)        
+
+        ##################################################
+        #                 start by button                #
+        ##################################################
+        def handleForm():
+            pass
+        button = tkinter.Button(frame, text="Submit" , command="handleForm")
+        button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
 
 #to run my window component
         window.mainloop()
