@@ -156,16 +156,22 @@ class FriendshipCommunity:
         password_label.grid(row = 2, column = 2)
         password_input.grid(row = 3, column= 2)
 #create show_password_btn_label , inputs and render it
-        show_password_btn_btn = tkinter.Checkbutton(account_info_frame)
-        show_password_btn_label = tkinter.Label(account_info_frame, text="show Password")
-        show_password_btn_btn.grid(row = 3, column= 3)
+        show_password_btn_label = tkinter.Checkbutton(account_info_frame, text="show Password")
         show_password_btn_label.grid(row = 3, column = 4)
 
 #set padding for personal inputs
         for wedget in account_info_frame.winfo_children():
-            if wedget == show_password_btn_btn or wedget == show_password_btn_label:
-                continue
             wedget.grid_configure(padx=10, pady= 5)
+
+        ##################################################
+        #           start by terms & conditions info     #
+        ##################################################
+
+        terms_conditions_frame = tkinter.LabelFrame(frame, text= "Terms & Conditions")
+        terms_conditions_frame.grid(row=2 , column= 0,sticky="news")
+#create terms_btn_label , inputs and render it
+        terms_btn_label = tkinter.Checkbutton(terms_conditions_frame, text="Accept all terms and conditions")
+        terms_btn_label.grid(row = 0, column = 0)        
 
 #to run my window component
         window.mainloop()
