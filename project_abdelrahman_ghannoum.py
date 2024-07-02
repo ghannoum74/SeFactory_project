@@ -96,16 +96,20 @@ class FriendshipCommunity:
         ##################################################
         #                 handleForm fct                 #
         ##################################################
+
         def handleForm():
-            fullname = full_name_input.get()
-            hobits = full_name_input.get()
-            bio = bio_input.get()
-            gender = gender_combobox.get()
-            age = age_spinbox.get()
-            email = email_input.get()
-            password = password_input.get()
-            print(fullname, hobits,bio,gender,age,email,password)
-        
+            friend_data = {
+                    "fullname" : full_name_input.get(),
+                    "age" : age_spinbox.get(),
+                    "gender" : gender_combobox.get(),
+                    "email" : email_input.get(),
+                    "password" : password_input.get(),
+                    "nationality" : nationality_input.get(),
+                    "hobits" : hobits_input.get(),
+                    "bio" : bio_input.get(),
+                    "term & policie":term_var.get()
+                }
+            print(friend_data)
         ##################################################
         #           start by Personal info               #
         ##################################################
@@ -183,7 +187,8 @@ class FriendshipCommunity:
         terms_conditions_frame = tkinter.LabelFrame(frame, text= "Terms & Conditions")
         terms_conditions_frame.grid(row=2 , column= 0,sticky="news",padx=10, pady=10)
 #create terms_btn_label , inputs and render it
-        terms_btn_label = tkinter.Checkbutton(terms_conditions_frame, text="Accept all terms and conditions")
+        term_var = tkinter.StringVar(value=False)
+        terms_btn_label = tkinter.Checkbutton(terms_conditions_frame, text="Accept all terms and conditions", variable=term_var, onvalue=True,offvalue=False)
         terms_btn_label.grid(row = 0, column = 0)        
 
         ##################################################
