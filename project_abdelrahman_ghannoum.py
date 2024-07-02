@@ -51,12 +51,5 @@ class FriendsList:
                 current = current.next
             print(f"Friend {friend} not found in the list.")
                 
-
-def main():
-    user = FriendsList()
-    friendData = {"fullname":"ahmad","age":16,"email":"ahmad123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
-    user.addFriend(friendData)
-main()
-    
-
-   
+    def getSize(self):
+        print(f"Your have {self.size} followers. Congrats")
