@@ -87,6 +87,17 @@ class FriendshipCommunity:
         frame = tkinter.Frame(window)
 #to save my frame
         frame.pack()
+#saving user info
+        user_info_frame = tkinter.LabelFrame(frame, text= "User_Information")
+        user_info_frame.grid(row=0 , column= 0 )
+
+#create new wedget
+        full_name_label = tkinter.Label(user_info_frame, text="Full name")
+        full_name_label.grid(row = 0, column = 0)
 #to run my window component
         window.mainloop()
 
+def main():
+    friend = FriendshipCommunity()
+    friend.createUser()
+main()
