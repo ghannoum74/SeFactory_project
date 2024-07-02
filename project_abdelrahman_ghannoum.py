@@ -92,6 +92,19 @@ class FriendshipCommunity:
         frame = tkinter.Frame(window, padx=20, pady= 20)
 #to save my frame
         frame.pack(padx=100, pady=100)
+
+        ##################################################
+        #                 handleForm fct                 #
+        ##################################################
+        def handleForm():
+            fullname = full_name_input.get()
+            hobits = full_name_input.get()
+            bio = bio_input.get()
+            gender = gender_combobox.get()
+            age = age_spinbox.get()
+            email = email_input.get()
+            password = password_input.get()
+            print(fullname, hobits,bio,gender,age,email,password)
         
         ##################################################
         #           start by Personal info               #
@@ -176,9 +189,7 @@ class FriendshipCommunity:
         ##################################################
         #                 start by button                #
         ##################################################
-        def handleForm():
-            pass
-        button = tkinter.Button(frame, text="Submit" , command="handleForm")
+        button = tkinter.Button(frame, text="Submit" , command= handleForm)
         button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
 
 #to run my window component
