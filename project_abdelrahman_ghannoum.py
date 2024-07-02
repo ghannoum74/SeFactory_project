@@ -35,9 +35,9 @@ class FriendsList:
             print("You're Lonely . You don't even have a friends to remove it :(")
             return
         elif self.head.email == friend:
+            print(f"{self.head.fullname} removed")
             self.head = self.head.next
             self.size -= 1
-            print(f"{friend} removed")
         else :
             current = self.head.next
             previous = self.head
@@ -45,11 +45,67 @@ class FriendsList:
                 if current.email == friend:
                     previous.next = current.next
                     self.size -= 1
-                    print(f"{friend} removed")
+                    print(f"{current.fullname} removed")
                     return 
                 previous = current 
                 current = current.next
-            print(f"Friend {friend} not found in the list.")
+            print(f"{friend} not found in the list.")
                 
     def getSize(self):
-        print(f"Your have {self.size} followers. Congrats")
+        print(f"Your have {self.size} followers")
+
+    def displayFriends(self):
+        if self.size == 0:
+            print("list is empty")
+        else:
+            current = self.head
+            friends = []
+            while current :
+                friend_data = {
+                    "fullname" : current.fullname,
+                    "age" : current.age,
+                    "email" : current.email,
+                    "password" : current.password,
+                    "address" : current.address,
+                    "hobits" : current.hobits,
+                    "bio" : current.bio,
+                }
+                friends.append(friend_data)
+                current = current.next
+            print(friends)
+
+def main():
+    ll = FriendsList()
+    ll.getSize()
+    ll.displayFriends()
+    print("*-----------------------*")
+    ll.removeFriend("ahmad")
+    ll.displayFriends()
+    print("*-----------------------*")
+    friendData = {"fullname":"ahmad","age":16,"email":"ahmad123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
+    ll.addFriend(friendData)
+    Data = {"fullname":"samir","age":16,"email":"samir123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
+    ll.addFriend(Data)
+    friend = {"fullname":"mhamad","age":16,"email":"mhamad123@gmail.com", "password":"ahmad123","address": "adhidhdkd","hobits" :"fdkjh" ,"bio": "dsahfaiufjkfe"}
+    ll.addFriend(friend)
+    print("*-----------------------*")
+    ll.displayFriends()
+    print("*-----------------------*")
+    ll.getSize()
+    print("*-----------------------*")
+    ll.removeFriend("ahmad123@gmail.com")
+    print("*-----------------------*")
+    ll.getSize()
+    print("*-----------------------*")
+    ll.removeFriend("dsas123@gmail.com")
+    print("*-----------------------*")
+    ll.displayFriends()
+    print("*-----------------------*")
+    ll.removeFriend("samir123@gmail.com")
+    print("*-----------------------*")
+    ll.removeFriend("mhamad123@gmail.com")
+    print("*-----------------------*")
+    ll.displayFriends()
+    print("*-----------------------*")
+    ll.getSize()
+main()
