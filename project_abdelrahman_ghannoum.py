@@ -1,7 +1,9 @@
-import http.client
+import re
 import tkinter
+import tkinter.messagebox
 import requests
 from tkinter import ttk
+from tkinter import messagebox
 class UserNode:
     def __init__(self,friendsData) -> None:
         self.fullname = friendsData["fullname"]
@@ -98,7 +100,23 @@ class FriendshipCommunity:
         ##################################################
 
         def handleForm():
-            friend_data = {
+        ##################################################
+        #                 Error handling                 #
+        ##################################################
+            if not re.match("^(?=.{3,}$)[a-zA-Z]+( [a-zA-Z]+)?$", full_name_input.get()):
+                tkinter.messagebox.showerror(title="fullname Error" , message="fullname not acceptable . it should not contain any spetial characteres (/*@#$) or numbers(0--->9) and should contain at least 3 characteres")
+            elif gender_combobox.get()!= "Male" or gender_combobox.get()!= "Female" or gender_combobox.get()!= "rather not say":
+                  tkinter.messagebox.showerror(title="Gender Error", message="Gender should be one from the list")
+            elif not nationality_input.get() :
+                  tkinter.messagebox.showerror(title="Nationality Error", message="Nationality field required")
+            elif not re.match("^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|[a-zA-Z0-9.-]+\\.(co|com))$", email_input.get()):
+                tkinter.messagebox.showerror(title="Email Error", message="Email should be as format : Example123@exmail.co")
+            elif not re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$", password_input.get()):
+                tkinter.messagebox.showerror(title="Password Error", message="strong password should contain Minimum 8 characters. At least one uppercase letter. At least one lowercase letter. At least one number. At least one special character (e.g., !@#$%^&*).")
+            else :
+                acceptedTerms = term_var.get()
+                if acceptedTerms == "1":
+                    friend_data = {
                     "fullname" : full_name_input.get(),
                     "age" : age_spinbox.get(),
                     "gender" : gender_combobox.get(),
@@ -108,8 +126,12 @@ class FriendshipCommunity:
                     "hobits" : hobits_input.get(),
                     "bio" : bio_input.get(),
                     "term & policie":term_var.get()
-                }
-            print(friend_data)
+                    }
+                    print(friend_data)
+                else:
+                    tkinter.messagebox.showwarning(title="fullname Error", message="terms & policy should be accepted")
+            
+
         ##################################################
         #           start by Personal info               #
         ##################################################
