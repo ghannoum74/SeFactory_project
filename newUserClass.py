@@ -4,6 +4,7 @@ import requests
 import tkinter.messagebox
 from tkinter import ttk
 from tkinter import messagebox 
+import json
 class newUSer:
     def __init__(self) -> None:
         self.fullname_input = ""
@@ -20,8 +21,28 @@ class newUSer:
     #variable declared for toggling password input value from "*" to actual value
         self.show_password_toggle = ""
         self.user_data = {}
+
+        ##################################################
+        #                 get User Data                  #
+        ##################################################
+
     def getUserData(self):
          return self.user_data
+    
+        ##################################################
+        #                 set User Data                  #
+        ##################################################
+
+    def setUserData(self, user_data):
+        with open('userDB.json', 'w') as json_file:
+             data = json.load(json_file)
+        data.append(self.user_data)
+        with open('userDB.json', 'w')as json_file:
+             json.dump(data, json_file, indent=4)
+
+        ##################################################
+        #            Reste form after submit it          #
+        ##################################################
 
     def clearForm(self):
         self.full_name_input.delete(0 , "end")
@@ -35,11 +56,19 @@ class newUSer:
         self.password_input.delete(0, "end")
         self.term_var.set(False)
 
+        ##################################################
+        #               toggle the password              #
+        ##################################################
+
     def togglePassword(self):
             if self.show_password_toggle.get():
                 self.password_input.config(show="")
             else:
                 self.password_input.config(show="*") 
+
+        ##################################################
+        #                 Error handling                 #
+        ##################################################
 
     def handleForm(self):
         fullname = self.full_name_input.get()
@@ -81,10 +110,15 @@ class newUSer:
                 "term & policie":acceptedTerms
                 }
                 self.user_data = user_data
+                self.setUserData(self.user_data)
                 self.getUserData()
                 self.clearForm()
             else:
                 tkinter.messagebox.showwarning(title="fullname Error", message="terms & policy should be accepted")
+
+        ##################################################
+        #                 create new user                #
+        ##################################################
          
     def createUser(self):
     #parent component

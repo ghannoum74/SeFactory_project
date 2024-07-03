@@ -1,6 +1,3 @@
-import tkinter
-import tkinter.messagebox
-
 # from addNewUser import addUser
 from newUserClass import newUSer
 class UserNode:
@@ -85,8 +82,17 @@ class FriendshipCommunity:
         self.adj_list = {}
 
     def createUser(self):
+        print(self.adj_list)
         user = newUSer()
         user.createUser()
+        print(user.getUserData())
+        if user.getUserData()["email"] not in self.adj_list:
+            self.adj_list[user.getUserData()["email"]] = FriendsList()
+            print("user", user.getUserData()["fullname"], "has been added!\n")
+            print(self.adj_list)
+            return 
+        print("user ", user.getUserData()["email"], "already exists!\n")
+
         
 
 def main():
