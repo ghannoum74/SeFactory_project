@@ -9,14 +9,20 @@ from tkinter import messagebox
 ##################################################
 
 def handleForm(fullname, age, gender, email, password, nationality, hobits, bio, acceptedTerms, countries_data):
-        if not re.match("^(?=.{3,}$)[a-zA-Z]+( [a-zA-Z]+)?$", fullname):
+        if not fullname:
+             tkinter.messagebox.showerror(title="fullname Error" , message="Full name Field required")
+        elif not re.match("^(?=.{3,}$)[a-zA-Z]+( [a-zA-Z]+)?$", fullname):
                tkinter.messagebox.showerror(title="fullname Error" , message="fullname not acceptable . it should not contain any spetial characteres (/*@#$) or numbers(0--->9) and should contain at least 3 characteres")
         elif gender not in ["Male", "Female", "rather not say"]:
               tkinter.messagebox.showerror(title="Gender Error", message="Gender should be one from the list")
         elif nationality not in countries_data:
               tkinter.messagebox.showerror(title="Nationality Error", message="Nationality should be one from the list")
+        elif not email :
+             tkinter.messagebox.showerror(title="Email Error" , message="Email Field required")
         elif not re.match("^[a-zA-Z_]{3,}[0-9]@(?:gmail\\.com|hotmail\\.com)$", email):
             tkinter.messagebox.showerror(title="Email Error", message="Email should be as format : Example1@gmail/hotmail.com")
+        elif not password :
+             tkinter.messagebox.showerror(title="Password Error" , message="Password Field required")
         elif not re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$", password):
             tkinter.messagebox.showerror(title="Password Error", message="strong password should contain Minimum 8 characters. At least one uppercase letter. At least one lowercase letter. At least one number. At least one special character (e.g., !@#$%^&*).")
         else :
@@ -36,6 +42,12 @@ def handleForm(fullname, age, gender, email, password, nationality, hobits, bio,
             else:
                 tkinter.messagebox.showwarning(title="fullname Error", message="terms & policy should be accepted")
 def addUser():
+        #TOGGLE PASSWORD FORM 
+        def togglePassword():
+            if show_password_tggle.get():
+                password_input.config(show="")
+            else:
+                password_input.config(show="*")
 #parent component
         window = tkinter.Tk()
 #title for my GUI program
@@ -106,11 +118,12 @@ def addUser():
         email_input.grid(row = 3, column= 1)
 #create password_label , inputs and render it
         password_label = tkinter.Label(account_info_frame, text="Password")
-        password_input = tkinter.Entry(account_info_frame)
+        password_input = tkinter.Entry(account_info_frame , show="*")
         password_label.grid(row = 2, column = 2)
         password_input.grid(row = 3, column= 2)
 #create show_password_btn_label , inputs and render it
-        show_password_btn_label = tkinter.Checkbutton(account_info_frame, text="show Password")
+        show_password_tggle = tkinter.BooleanVar()
+        show_password_btn_label = tkinter.Checkbutton(account_info_frame, text="show Password",variable=show_password_tggle, command=togglePassword)
         show_password_btn_label.grid(row = 3, column = 4)
 
 #set padding for personal inputs
