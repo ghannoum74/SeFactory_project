@@ -103,29 +103,38 @@ class FriendshipCommunity:
         ##################################################
         #                 Error handling                 #
         ##################################################
-            if not re.match("^(?=.{3,}$)[a-zA-Z]+( [a-zA-Z]+)?$", full_name_input.get()):
+        #get the data 
+            fullname = full_name_input.get()
+            age = age_spinbox.get()
+            gender = gender_combobox.get()
+            email = email_input.get()
+            password = password_input.get()
+            nationality = nationality_input.get()
+            hobits = hobits_input.get()
+            bio = bio_input.get()
+            acceptedTerms = term_var.get() 
+            if not re.match("^(?=.{3,}$)[a-zA-Z]+( [a-zA-Z]+)?$", fullname):
                 tkinter.messagebox.showerror(title="fullname Error" , message="fullname not acceptable . it should not contain any spetial characteres (/*@#$) or numbers(0--->9) and should contain at least 3 characteres")
-            elif gender_combobox.get()!= "Male" or gender_combobox.get()!= "Female" or gender_combobox.get()!= "rather not say":
+            elif gender not in ["Male", "Female", "rather not say"]:
                   tkinter.messagebox.showerror(title="Gender Error", message="Gender should be one from the list")
-            elif not nationality_input.get() :
-                  tkinter.messagebox.showerror(title="Nationality Error", message="Nationality field required")
-            elif not re.match("^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|[a-zA-Z0-9.-]+\\.(co|com))$", email_input.get()):
-                tkinter.messagebox.showerror(title="Email Error", message="Email should be as format : Example123@exmail.co")
-            elif not re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$", password_input.get()):
+            elif nationality not in countries_data:
+                  tkinter.messagebox.showerror(title="Nationality Error", message="Nationality should be one from the list")
+            elif not re.match("^[a-zA-Z_]{3,}[0-9]@(?:gmail\.com|hotmail\.com)$", email):
+                tkinter.messagebox.showerror(title="Email Error", message="Email should be as format : Example1@gmail/hotmail.com")
+            elif not re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$", password):
                 tkinter.messagebox.showerror(title="Password Error", message="strong password should contain Minimum 8 characters. At least one uppercase letter. At least one lowercase letter. At least one number. At least one special character (e.g., !@#$%^&*).")
             else :
-                acceptedTerms = term_var.get()
-                if acceptedTerms == "1":
+                if acceptedTerms == '1':
                     friend_data = {
-                    "fullname" : full_name_input.get(),
-                    "age" : age_spinbox.get(),
-                    "gender" : gender_combobox.get(),
-                    "email" : email_input.get(),
-                    "password" : password_input.get(),
-                    "nationality" : nationality_input.get(),
-                    "hobits" : hobits_input.get(),
-                    "bio" : bio_input.get(),
-                    "term & policie":term_var.get()
+                    "fullname" : fullname,
+                    "age" : age,
+                    "gender" : gender,
+                    "email" : email,
+                    "password" : password,
+                    "nationality" : nationality,
+                    "hobits" : hobits,
+                    "bio" : bio,
+                    "term & policie":acceptedTerms
                     }
                     print(friend_data)
                 else:
@@ -158,6 +167,7 @@ class FriendshipCommunity:
 #create gender label , inputs and render it
         gender = tkinter.Label(personal_info_frame, text="Gender")
         gender_combobox = ttk.Combobox(personal_info_frame, values=["Male", "Female", "rather not say"])
+        gender_combobox.set("Select an option")
         gender.grid(row= 2, column= 0 )
         gender_combobox.grid(row=3, column= 0)
 #create age_label, input and render it
@@ -169,8 +179,9 @@ class FriendshipCommunity:
         nationality_label = tkinter.Label(personal_info_frame, text="Nationality")
 ####fetching nationality api####
         req = requests.get("https://freetestapi.com/api/v1/countries")
-        response =[county["name"] for county in req.json()[:150]]
-        nationality_input = ttk.Combobox(personal_info_frame,values=response)
+        countries_data =[county["name"] for county in req.json()[:150]]
+        nationality_input = ttk.Combobox(personal_info_frame, values = countries_data)
+        nationality_input.set("Select an option")
         nationality_label.grid(row=2, column=2)
         nationality_input.grid(row= 3, column= 2)
 
