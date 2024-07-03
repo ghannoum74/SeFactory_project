@@ -8,7 +8,16 @@ from tkinter import messagebox
 #                 Error handling                 #
 ##################################################
 
-def handleForm(fullname, age, gender, email, password, nationality, hobits, bio, acceptedTerms, countries_data):
+def handleForm(full_name_input, age_spinbox, gender_combobox, email_input, password_input, nationality_input, hobits_input, bio_input, term_var, countries_data):
+        fullname = full_name_input.get()
+        age = age_spinbox.get()
+        gender = gender_combobox.get()
+        email = email_input.get()
+        password = password_input.get()
+        nationality = nationality_input.get()
+        hobits = hobits_input.get()
+        acceptedTerms = term_var.get()
+        bio = bio_input.get()
         if not fullname:
              tkinter.messagebox.showerror(title="fullname Error" , message="Full name Field required")
         elif not re.match("^(?=.{3,}$)[a-zA-Z]+( [a-zA-Z]+)?$", fullname):
@@ -38,9 +47,13 @@ def handleForm(fullname, age, gender, email, password, nationality, hobits, bio,
                 "bio" : bio,
                 "term & policie":acceptedTerms
                 }
-                print(friend_data)
+                print (friend_data)
+                clearForm()
             else:
                 tkinter.messagebox.showwarning(title="fullname Error", message="terms & policy should be accepted")
+
+def clearForm():
+     pass
 def addUser():
         #TOGGLE PASSWORD FORM 
         def togglePassword():
@@ -145,18 +158,20 @@ def addUser():
         #                 start by button                #
         ##################################################
         def errorHandlingFct():
-                handleForm(full_name_input.get(),
-                           age_spinbox.get(),
-                           gender_combobox.get(),
-                           email_input.get(),
-                           password_input.get(),
-                           nationality_input.get(),
-                           hobits_input.get(),
-                           bio_input.get(),
-                           term_var.get(),
+                 handleForm(full_name_input,
+                           age_spinbox,
+                           gender_combobox,
+                           email_input,
+                           password_input,
+                           nationality_input,
+                           hobits_input,
+                           bio_input,
+                           term_var,
                            countries_data)
         button = tkinter.Button(frame, text="Submit" , command= errorHandlingFct)
         button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
+        print()
+
 
 #to run my window component
         window.mainloop()
