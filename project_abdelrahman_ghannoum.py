@@ -1,7 +1,8 @@
 import tkinter
 import tkinter.messagebox
 
-from addNewUser import addUser
+# from addNewUser import addUser
+from newUserClass import newUSer
 class UserNode:
     def __init__(self,friendsData) -> None:
         self.fullname = friendsData["fullname"]
@@ -84,7 +85,8 @@ class FriendshipCommunity:
         self.adj_list = {}
 
     def createUser(self):
-        addUser()
+        user = newUSer()
+        user.createUser()
         
 
 def main():
