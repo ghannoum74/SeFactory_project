@@ -1,7 +1,7 @@
 import tkinter
 import tkinter.messagebox
 
-from GUIForm import createGUIForm
+from addNewUser import addUser
 class UserNode:
     def __init__(self,friendsData) -> None:
         self.fullname = friendsData["fullname"]
@@ -84,11 +84,12 @@ class FriendshipCommunity:
         self.adj_list = {}
 
     def createUser(self):
-        createGUIForm
+        addUser()
         
 
 def main():
     friend = FriendshipCommunity()
     friend.createUser()
+    
 main()
     
