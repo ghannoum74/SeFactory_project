@@ -21,6 +21,8 @@ class newUSer:
     #variable declared for toggling password input value from "*" to actual value
         self.show_password_toggle = ""
         self.user_data = {}
+        #parent component
+        root = tkinter.Tk()
 
         ##################################################
         #                 get User Data                  #
@@ -67,6 +69,13 @@ class newUSer:
                 self.password_input.config(show="*") 
 
         ##################################################
+        #            Exit button functionality           #
+        ##################################################
+
+    def exitBtnHandler(self):
+            self.root.destroy()
+
+        ##################################################
         #                 Error handling                 #
         ##################################################
 
@@ -77,7 +86,7 @@ class newUSer:
         email = self.email_input.get()
         password = self.password_input.get()
         nationality =self. nationality_input.get()
-        hobits = self.hobbies_input.get()
+        hobbies = self.hobbies_input.get()
         acceptedTerms = self.term_var.get()
         bio = self.bio_input.get()
         if not fullname:
@@ -105,7 +114,7 @@ class newUSer:
                 "email" : email,
                 "password" : password,
                 "nationality" : nationality,
-                "hobits" : hobits,
+                "hobbies" : hobbies,
                 "bio" : bio,
                 "term & policie":acceptedTerms
                 }
@@ -120,13 +129,11 @@ class newUSer:
         #                 create new user                #
         ##################################################
          
-    def createUser(self):
-    #parent component
-        window = tkinter.Tk()
+    def addUser(self):
     #title for my GUI program
-        window.title("Friendship Community")
+        self.root.title("Friendship Community")
     #nested component in my window
-        frame = tkinter.Frame(window, padx=20, pady= 20)
+        frame = tkinter.Frame(self.root, padx=20, pady= 20)
         #to save my frame
         frame.pack(padx=100, pady=100)
 
@@ -143,10 +150,10 @@ class newUSer:
         self.full_name_input = tkinter.Entry(personal_info_frame)
         full_name_label.grid(row = 0, column = 0)
         self.full_name_input.grid(row = 1, column= 0)
-    #create hobits_label , inputs and render it
-        hobits_label = tkinter.Label(personal_info_frame, text="Hobits")
+    #create hobbies_label , inputs and render it
+        hobbies_label = tkinter.Label(personal_info_frame, text="Hobies")
         self.hobbies_input= tkinter.Entry(personal_info_frame)
-        hobits_label.grid(row = 0, column = 1)
+        hobbies_label.grid(row = 0, column = 1)
         self.hobbies_input.grid(row = 1, column= 1)
     #create bio_label , input and render it 
         bio_label = tkinter.Label(personal_info_frame, text="Bio")
@@ -212,10 +219,12 @@ class newUSer:
         terms_btn_label.grid(row = 0, column = 0)        
 
         ##################################################
-        #                 start by button                #
+        #                 start by buttons               #
         ##################################################
-        button = tkinter.Button(frame, text="Submit" , command= self.handleForm)
+        button = tkinter.Button(frame, text="Save" , command= self.handleForm)
         button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
-        window.mainloop()
+        button = tkinter.Button(frame, text="Exit" ,command=self.exit_program)
+        button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
+        self.root.mainloop()
 
     

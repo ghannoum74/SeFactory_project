@@ -8,13 +8,14 @@ class UserNode:
         self.email = friendsData["email"] 
         self.password = friendsData["password"]
         self.nationality = friendsData["nationality"] 
-        self.hobits = friendsData["hobits"]
+        self.hobbies= friendsData["hobbies"]
         self.bio = friendsData["bio"]
         self.following = 0
         self.followers = 0
         self.block = 0
         self.isActive = False
         self.isAdmin = False
+        self.next = None
         pass
 #It's our linked list for the friends of vertesis
 class FriendsList:
@@ -69,7 +70,7 @@ class FriendsList:
                     "email" : current.email,
                     "password" : current.password,
                     "nationality" : current.nationality,
-                    "hobits" : current.hobits,
+                    "hobbies" : current.hobbies,
                     "bio" : current.bio,
                 }
                 friends.append(friend_data)
@@ -82,9 +83,8 @@ class FriendshipCommunity:
         self.adj_list = {}
 
     def createUser(self):
-        print(self.adj_list)
         user = newUSer()
-        user.createUser()
+        # user.addUser()
         print(user.getUserData())
         if user.getUserData()["email"] not in self.adj_list:
             self.adj_list[user.getUserData()["email"]] = FriendsList()
