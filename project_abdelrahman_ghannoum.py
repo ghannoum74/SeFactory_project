@@ -1,3 +1,4 @@
+import json
 # from addNewUser import addUser
 from newUserClass import newUSer
 class UserNode:
@@ -87,14 +88,13 @@ class FriendshipCommunity:
         user = newUSer()
         user.addUser()
         
-    #i already managed the existence user in the addUser()function so all user is not existe in the self.adj_list
-    #this is like temparary data base when we enter the user GUI you can add as match as you want user and it managed if user entered twice 
-    #when you print exit all users entered is passed to user object and store it in the adj_list dictionary
-    #so now i retrive each user (email) and set it as vertex with value equal to empty FriendList[linledlist]
-        users_email = list(user.user_data.keys())
-        for email in users_email:
-            self.adj_list[email] = FriendsList()
+        with open("userDB.json", "r") as file:
+            all_users = json.load(file)
 
+        if user not in self.adj_list:
+            self.adj_list[user] = FriendshipCommunity()
+        else :
+            print(f"{user} already exist \n")
     
     def follow(self, sourceUser, destinationUser):
         if sourceUser in self.adj_list and destinationUser in self.adj_list:
