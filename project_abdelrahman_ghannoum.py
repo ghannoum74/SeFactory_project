@@ -1,15 +1,15 @@
 # from addNewUser import addUser
 from newUserClass import newUSer
 class UserNode:
-    def __init__(self, email) -> None:
-        # self.fullname = friendsData["fullname"]
-        # self.age = friendsData["age"]
-        # self.gender = friendsData["gender"]
+    def __init__(self, friendsData) -> None:
+        self.fullname = friendsData["fullname"]
+        self.age = friendsData["age"]
+        self.gender = friendsData["gender"]
         # self.password = friendsData["password"]
-        # self.nationality = friendsData["nationality"] 
-        # self.hobbies= friendsData["hobbies"]
-        # self.bio = friendsData["bio"]
-        self.email = email
+        self.nationality = friendsData["nationality"] 
+        self.hobbies= friendsData["hobbies"]
+        self.bio = friendsData["bio"]
+        self.email = friendsData["email"]
         self.following = 0
         self.followers = 0
         self.block = 0
@@ -68,7 +68,7 @@ class FriendsList:
                     "age" : current.age,
                     "gender" : current.gender,
                     "email" : current.email,
-                    "password" : current.password,
+                    # "password" : current.password,
                     "nationality" : current.nationality,
                     "hobbies" : current.hobbies,
                     "bio" : current.bio,
@@ -107,21 +107,22 @@ class FriendshipCommunity:
         elif destinationUser not in self.adj_list:
             print("Invalid",destinationUser)
 
-    def display(self):
+    def displayFriendList(self):
         if self.adj_list == {}:
             print("Graph is empty!\n")
             return
-        for vertex in self.adj_list:
-            friends_str = self.adj_list[vertex].displayFriends()
-            print(f"{vertex}: {friends_str}")
-
-    
-
+        else :
+            for vertex in self.adj_list:
+                print(vertex + ":", self.adj_list[vertex].displayFriends())
         
 
 def main():
     friend = FriendshipCommunity()
     friend.createUser()
-    friend.follow("aboud1@gmail.com", "aboud2@gmail.com")
+    # friend.displayFriendList()
 main()
+    
+
+        
+
     
