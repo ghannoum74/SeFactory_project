@@ -2,6 +2,7 @@ import json
 # from addNewUser import addUser
 from newUserClass import newUSer
 class UserNode:
+    
     def __init__(self, friendsData) -> None:
         self.fullname = friendsData["fullname"]
         self.age = friendsData["age"]
@@ -25,11 +26,14 @@ class FriendsList:
         self.size = 0
 
 #it's the same as addnode
-    def addFriend(self, friendData):
-        friend = UserNode(friendData)
+    def addFriend(self, friend_email):
+        with open("userDB.json", "r") as file:
+            all_users = json.load(file)
+        all_friend_data = all_users[friend_email]
+        friend = UserNode(all_friend_data)
         friend.next = self.head
         self.head = friend
-        print(f"{friendData} has been added successfuly")
+        print(f"{all_friend_data["fullname"]} has been added successfuly")
         self.size += 1
 
 #it's the same as removeNode
@@ -87,14 +91,12 @@ class FriendshipCommunity:
     def createUser(self):
         user = newUSer()
         user.addUser()
-        
+    #i didn't handle if user in self.adj_list because im sure that the data base dosent contain any same users
         with open("userDB.json", "r") as file:
             all_users = json.load(file)
 
-        if user not in self.adj_list:
-            self.adj_list[user] = FriendshipCommunity()
-        else :
-            print(f"{user} already exist \n")
+        for user in all_users.keys():
+            self.adj_list[user] = FriendsList()
     
     def follow(self, sourceUser, destinationUser):
         if sourceUser in self.adj_list and destinationUser in self.adj_list:
@@ -118,7 +120,11 @@ class FriendshipCommunity:
 
 def main():
     friend = FriendshipCommunity()
-    friend.createUser()
+    # friend.createUser()
+    friend.follow("aboud2@gmail.com","ghann1@gmail.com")
+    # friend.follow("abo2@gmail.com","gha9@gmail.com")
+    # friend.follow("abou@gmail.com","ghann1@gmail.com")
+    # friend.follow("aboud2@gmail.com","ghann2@gmail.com")
     # friend.displayFriendList()
 main()
     
