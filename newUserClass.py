@@ -29,8 +29,8 @@ class newUSer:
         #                 get User Data                  #
         ##################################################
 
-    def getUserData(self):
-         return self.user_data
+    # def getUserData(self):
+    #      return self.user_data
     
         ##################################################
         #                 set User Data                  #
@@ -39,10 +39,16 @@ class newUSer:
     def setUserData(self, data):
     #check if data already exist in my self.user_data dictionary
     #so self.user_data dictionary here is like small DB 
-        if data['email'] in self.user_data:
+        self.user_data[data['email']] = data
+        with open("userDB.json", 'r') as file:
+            existing_data = json.load(file)
+        if data['email'] in existing_data:
             tkinter.messagebox.showerror(title="Email Exist" , message="Email is already in use...please try another one or log in")
         else :
-             self.user_data[data['email']] = data
+            existing_data[data['email']] = data
+            with open("userDB.json", 'w') as file:
+                json.dump(existing_data, file)
+
 
         ##################################################
         #            Reste form after submit it          #
