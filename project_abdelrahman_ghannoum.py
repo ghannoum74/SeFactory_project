@@ -85,17 +85,16 @@ class FriendshipCommunity:
     def createUser(self):
         user = newUSer()
         user.addUser()
-        if user.getUserData():
-            print(user.user_data)
-            # print(user.getUserData())
-            # if user.getUserData()["email"] not in self.adj_list:
-            #     self.adj_list[user.getUserData()["email"]] = FriendsList()
-            #     print("user", user, "has been added!\n")
-            #     print(self.adj_list)
-            #     return 
-            # print("user ", user.getUserData()["email"], "already exists!\n")
-        else :
-            print("No user get it from the form")
+    #i already managed the existence user in the addUser()function so all user is not existe in the self.adj_list
+    #this is like temparary data base when we enter the user GUI you can add as match as you want user and it managed if user entered twice 
+    #when you print exit all users entered is passed to user object and store it in the adj_list dictionary
+    #so now i retrive each user (email) and set it as vertex with value equal to empty FriendList[linledlist]
+        print(user.user_data)
+        if user.user_data.keys not in self.adj_list:
+            self.adj_list[user.user_data.keys] = FriendsList() 
+
+    
+    
 
         
 

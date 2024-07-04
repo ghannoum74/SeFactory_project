@@ -20,6 +20,7 @@ class newUSer:
         self.countries_data = [county["name"] for county in requests.get("https://freetestapi.com/api/v1/countries").json()]
     #variable declared for toggling password input value from "*" to actual value
         self.show_password_toggle = ""
+    # i used dictionary to store data to O(1) be the TC when i will iterable through the entire dictionary in set fuction and others
         self.user_data = {}
         #parent component
         self.root = tkinter.Tk()
@@ -36,8 +37,10 @@ class newUSer:
         ##################################################
 
     def setUserData(self, data):
+    #check if data already exist in my self.user_data dictionary
+    #so self.user_data dictionary here is like small DB 
         if data['email'] in self.user_data:
-             print("email exist")
+            tkinter.messagebox.showerror(title="Email Exist" , message="Email is already in use...please try another one or log in")
         else :
              self.user_data[data['email']] = data
 
