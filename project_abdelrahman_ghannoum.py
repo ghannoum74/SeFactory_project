@@ -84,14 +84,18 @@ class FriendshipCommunity:
 
     def createUser(self):
         user = newUSer()
-        # user.addUser()
-        print(user.getUserData())
-        if user.getUserData()["email"] not in self.adj_list:
-            self.adj_list[user.getUserData()["email"]] = FriendsList()
-            print("user", user.getUserData()["fullname"], "has been added!\n")
-            print(self.adj_list)
-            return 
-        print("user ", user.getUserData()["email"], "already exists!\n")
+        user.addUser()
+        if user.getUserData():
+            print(user.user_data)
+            # print(user.getUserData())
+            # if user.getUserData()["email"] not in self.adj_list:
+            #     self.adj_list[user.getUserData()["email"]] = FriendsList()
+            #     print("user", user, "has been added!\n")
+            #     print(self.adj_list)
+            #     return 
+            # print("user ", user.getUserData()["email"], "already exists!\n")
+        else :
+            print("No user get it from the form")
 
         
 

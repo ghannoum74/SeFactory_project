@@ -22,7 +22,7 @@ class newUSer:
         self.show_password_toggle = ""
         self.user_data = {}
         #parent component
-        root = tkinter.Tk()
+        self.root = tkinter.Tk()
 
         ##################################################
         #                 get User Data                  #
@@ -35,12 +35,11 @@ class newUSer:
         #                 set User Data                  #
         ##################################################
 
-    def setUserData(self, user_data):
-        with open('userDB.json', 'w') as json_file:
-             data = json.load(json_file)
-        data.append(self.user_data)
-        with open('userDB.json', 'w')as json_file:
-             json.dump(data, json_file, indent=4)
+    def setUserData(self, data):
+        if data['email'] in self.user_data:
+             print("email exist")
+        else :
+             self.user_data[data['email']] = data
 
         ##################################################
         #            Reste form after submit it          #
@@ -72,7 +71,7 @@ class newUSer:
         #            Exit button functionality           #
         ##################################################
 
-    def exitBtnHandler(self):
+    def exitProgram(self):
             self.root.destroy()
 
         ##################################################
@@ -107,7 +106,7 @@ class newUSer:
             tkinter.messagebox.showerror(title="Password Error", message="strong password should contain Minimum 8 characters. At least one uppercase letter. At least one lowercase letter. At least one number. At least one special character (e.g., !@#$%^&*).")
         else :
             if acceptedTerms == '1':
-                user_data = {
+                data = {
                 "fullname" : fullname,
                 "age" : age,
                 "gender" : gender,
@@ -118,9 +117,7 @@ class newUSer:
                 "bio" : bio,
                 "term & policie":acceptedTerms
                 }
-                self.user_data = user_data
-                self.setUserData(self.user_data)
-                self.getUserData()
+                self.setUserData(data)
                 self.clearForm()
             else:
                 tkinter.messagebox.showwarning(title="fullname Error", message="terms & policy should be accepted")
@@ -221,10 +218,10 @@ class newUSer:
         ##################################################
         #                 start by buttons               #
         ##################################################
-        button = tkinter.Button(frame, text="Save" , command= self.handleForm)
-        button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
-        button = tkinter.Button(frame, text="Exit" ,command=self.exit_program)
-        button.grid(row = 3, column=0, sticky="news",padx=10, pady=10)
+        save_btn = tkinter.Button(frame, text="Save" ,bg="green",fg="white", command= self.handleForm)
+        exit_btn = tkinter.Button(frame, text="Exit"  ,bg="red",fg="white",command=self.exitProgram)
+        save_btn.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
+        exit_btn.grid(row=4, column=0, padx=10, pady=5, sticky="ew")
         self.root.mainloop()
 
     
