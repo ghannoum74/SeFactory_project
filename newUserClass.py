@@ -42,7 +42,6 @@ class newUSer:
         ##################################################
         #                 create new user                #
         ##################################################
-
     def addUser(self):
     #title for my GUI program
         self.root.title("Friendship Community")
