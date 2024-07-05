@@ -12,18 +12,13 @@ class UserNode:
         self.hobbies= friendsData["hobbies"]
         self.bio = friendsData["bio"]
         self.email = friendsData["email"]
-        self.following_list = friendsData["following_list"]
         self.followers_list = friendsData["followers_list"]
-        self.following = friendsData["following"]
         self.followers = friendsData["followers"]
         self.isActive = friendsData["isActive"]
         self.block = 0
         self.isAdmin = False
         self.next = None
         pass
-
-    def addFollowing(self):
-        self.following += 1
 
     def addFollowers(self, user):
         user.followers +=1
@@ -45,7 +40,6 @@ class FriendsList:
     #creation successfuly
         friend = UserNode(user)
     #add friend to the its own destinationuser_list 
-        friend.addFollowing()
     #add node to linked list 
         friend.next = self.head
         self.head = friend
@@ -99,10 +93,8 @@ class FriendsList:
                     "nationality" : current.nationality,
                     "hobbies" : current.hobbies,
                     "bio" : current.bio,
-                    "following": current.following,
                     "followers": current.followers,
                     "isActive": current.isActive,
-                    "following_list": current.following_list,
                     "followers_list": current.followers_list
                 }
                 friends.append(friend_data)
@@ -120,16 +112,13 @@ class FriendshipCommunity:
         for user in all_users:
             self.adj_list[user] = FriendsList()
         
-
+    #add new user to the adj_list
     def createUser(self):
         user = newUSer()
         user.addUser()
-    #i didn't handle if user in self.adj_list because im sure that the data base dosent contain any same users
-        with open("userDB.json", "r") as file:
-            all_users = json.load(file)
 
-        for user in all_users:
-            self.adj_list[user] = FriendsList()
+        #no need to manage if user exist because i already managed in my GUI
+        self.adj_list[user] = FriendsList()
     
     def follow(self, sourceUser, destinationUser):
         with open("userDB.json", "r") as file:
@@ -159,6 +148,8 @@ def main():
     friend = FriendshipCommunity()
     # friend.createUser()
     friend.follow("aboud2@gmail.com","ghann1@gmail.com")
+    friend.follow("aboud2@gmail.com","messi1@gmail.com")
+    friend.follow("messi1@gmail.com","aboud2@gmail.com")
     # friend.follow("aboud2@gmail.com","ghannoum8@gmail.com")
     # friend.follow("aboud2@gmail.com","ghann1@gmail.com")
     friend.displayFriendList()

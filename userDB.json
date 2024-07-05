@@ -8,7 +8,10 @@
     "nationality": "Albania",
     "hobbies": "",
     "bio": "",
-    "term & policie": "1"
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {}
   },
   "ghann1@gmail.com": {
     "fullname": "addadda",
@@ -19,7 +22,12 @@
     "nationality": "Algeria",
     "hobbies": "",
     "bio": "",
-    "term & policie": "1"
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {
+      "ghann1@gmail.com": "ghann1@gmail.com"
+    }
   },
   "ghannoum8@gmail.com": {
     "fullname": "asddd",
@@ -30,29 +38,12 @@
     "nationality": "Algeria",
     "hobbies": "",
     "bio": "",
-    "term & policie": "1"
-  },
-  "dhhjds1@gmail.com": {
-    "fullname": "sfasfsfsa",
-    "age": "13",
-    "gender": "rather not say",
-    "email": "dhhjds1@gmail.com",
-    "password": "Aboud123!",
-    "nationality": "Albania",
-    "hobbies": "",
-    "bio": "",
-    "term & policie": "1"
-  },
-  "khai3@gmail.com": {
-    "fullname": "dsadss",
-    "age": "13",
-    "gender": "Female",
-    "email": "khai3@gmail.com",
-    "password": "Khdjak123!",
-    "nationality": "Algeria",
-    "hobbies": "",
-    "bio": "",
-    "term & policie": "1"
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {
+      "ghannoum8@gmail.com": "ghannoum8@gmail.com"
+    }
   },
   "samer1@gmail.com": {
     "fullname": "adds",
@@ -63,6 +54,51 @@
     "nationality": "Afghanistan",
     "hobbies": "",
     "bio": "",
-    "term & policie": "1"
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {}
+  },
+  "malak1@gmail.com": {
+    "fullname": "sadfs",
+    "age": "13",
+    "gender": "Male",
+    "email": "malak1@gmail.com",
+    "password": "Aboud123!",
+    "nationality": "Algeria",
+    "hobbies": "fsaasf",
+    "bio": "",
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {}
+  },
+  "aboud1@gmail.com": {
+    "fullname": "faf",
+    "age": "13",
+    "gender": "Male",
+    "email": "aboud1@gmail.com",
+    "password": "Aboud123!",
+    "nationality": "Algeria",
+    "hobbies": "fafs",
+    "bio": "",
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {}
+  },
+  "messi1@gmail.com": {
+    "fullname": "fsafsafsa",
+    "age": "15",
+    "gender": "Female",
+    "email": "messi1@gmail.com",
+    "password": "Messi123!",
+    "nationality": "Albania",
+    "hobbies": "fsafsa",
+    "bio": "",
+    "term_policie": "1",
+    "followers": 0,
+    "isActive": 0,
+    "followers_list": {}
   }
 }
