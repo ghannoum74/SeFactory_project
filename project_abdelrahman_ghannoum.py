@@ -12,7 +12,9 @@ class UserNode:
         self.hobbies= friendsData["hobbies"]
         self.bio = friendsData["bio"]
         self.email = friendsData["email"]
+        self.following_list = friendsData["following_list"]
         self.followers_list = friendsData["followers_list"]
+        self.following = friendsData["following"]
         self.followers = friendsData["followers"]
         self.isActive = friendsData["isActive"]
         self.block = 0
@@ -20,8 +22,15 @@ class UserNode:
         self.next = None
         pass
 
-    def addFollowers(self, user):
-        user.followers +=1
+    def addFollowing(self):
+        self.following += 1
+        # self.following_list.append(friend_email)
+
+    def addFollowers(self):
+        self.followers +=1
+
+    def addToFollowersList(self, followingUser):
+        self.followers_list[followingUser] = followingUser
 
 #It's our linked list for the friends of vertesis
 class FriendsList:
@@ -30,26 +39,25 @@ class FriendsList:
         self.size= 0
 
 #it's the same as addnode
-    def addFriend(self, destinationuser):
-    #get data from database
-        with open("userDB.json", "r") as file:
-            all_users = json.load(file)
-    
-    #get data for specific user the destinationuser
-        user = all_users[destinationuser]
+    def addFriend(self,destinationuser, sourceuser):
     #creation successfuly
-        friend = UserNode(user)
+        friend = UserNode(destinationuser)
     #add friend to the its own destinationuser_list 
+        friend.addFollowers()
+        friend.addToFollowersList(sourceuser['email'])
     #add node to linked list 
         friend.next = self.head
         self.head = friend
     #save to DB the change
-        print(f"{user['fullname']} has been added successfuly")
+        print(f"{destinationuser['fullname']} has been added successfuly")
         self.size += 1
-
-    #return new data to DB
-        with open("userDB.json", "w") as file:
-           json.dump(all_users, file, indent=4)
+    #update  data to DB
+        with open('userDB.json', 'r+') as file:
+            user = json.load(file)
+            user[destinationuser['email']] = destinationuser
+    #to move the pointer to beginning
+            file.seek(0) 
+            json.dump(user, file, indent=4)
         
 #it's the same as removeNode
     def removeFriend(self, friend):
@@ -93,8 +101,10 @@ class FriendsList:
                     "nationality" : current.nationality,
                     "hobbies" : current.hobbies,
                     "bio" : current.bio,
+                    "following": current.following,
                     "followers": current.followers,
                     "isActive": current.isActive,
+                    "following_list": current.following_list,
                     "followers_list": current.followers_list
                 }
                 friends.append(friend_data)
@@ -124,15 +134,16 @@ class FriendshipCommunity:
         with open("userDB.json", "r") as file:
             all_users = json.load(file)
         
-        if sourceUser in self.adj_list and destinationUser in self.adj_list:
-            self.adj_list[sourceUser].addFriend(destinationUser)
-            print(f"You are now friend with {destinationUser}")
-        elif sourceUser not in self.adj_list and destinationUser not in self.adj_list:
-            print("Invalid", sourceUser,"and",destinationUser)
-        elif sourceUser not in self.adj_list:
-            print("Invalid", sourceUser)
-        elif destinationUser not in self.adj_list:
-            print("Invalid",destinationUser)
+        #checking if email for source and destination because with email vertesis are stored
+        if sourceUser['email'] in self.adj_list and destinationUser['email'] in self.adj_list:
+            self.adj_list[sourceUser['email']].addFriend(destinationUser, sourceUser)
+            print(f"You are now friend with {destinationUser['email']}")
+        elif sourceUser['email'] not in self.adj_list and destinationUser['email'] not in self.adj_list:
+            print("Invalid","and",destinationUser['email'])
+        elif sourceUser['email'] not in self.adj_list:
+            print("Invalid", sourceUser['email'])
+        elif destinationUser['email'] not in self.adj_list:
+            print("Invalid",destinationUser['email'])
 
     def displayFriendList(self):
         
@@ -146,13 +157,29 @@ class FriendshipCommunity:
 
 def main():
     friend = FriendshipCommunity()
-    # friend.createUser()
-    friend.follow("aboud2@gmail.com","ghann1@gmail.com")
-    friend.follow("aboud2@gmail.com","messi1@gmail.com")
-    friend.follow("messi1@gmail.com","aboud2@gmail.com")
+    friend.createUser()
+    # friend.follow({ "fullname": "aboud", "age": "13", "gender": "Female", "email": "aboud1@gmail.com", "password": "Aboud123!", "nationality": "Algeria", "hobbies": "", "bio": "", "term_policie": "1", "followers": 0, "following": 0, "isActive": 0, "followers_list": {}, "following_list": {}
+    # },{
+    #     "fullname": "aboud",
+    #     "age": "13",
+    #     "gender": "Female",
+    #     "email": "aboud2@gmail.com",
+    #     "password": "Aboud123!",
+    #     "nationality": "Algeria",
+    #     "hobbies": "",
+    #     "bio": "",
+    #     "term_policie": "1",
+    #     "following": 0,
+    #     "followers": 0,
+    #     "isActive": 0,
+    #     "followers_list": {
+    #         "aboud3@gmail.com": "aboud3@gmail.com"
+    #     },
+    #     "following_list": {}
+    # },)
     # friend.follow("aboud2@gmail.com","ghannoum8@gmail.com")
     # friend.follow("aboud2@gmail.com","ghann1@gmail.com")
-    friend.displayFriendList()
+    # friend.displayFriendList()
     # friend.follow("abo2@gmail.com","gha9@gmail.com")
     # friend.follow("abou@gmail.com","ghann1@gmail.com")
     # friend.follow("aboud2@gmail.com","ghann2@gmail.com")

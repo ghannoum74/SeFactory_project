@@ -16,9 +16,11 @@ class newUSer:
         self.email_input = ""
         self.password_input = ""
         self.term_var = False
+        self.following = 0
         self.followers = 0
         self.isActive = False
-    #initial followers_list by dictionary to avoid duplicate
+    #initial following_list and followers_list by dictionary to avoid duplicate
+        self.following_list = {}
         self.followers_list = {}
     #fetching data for nationality list
         self.countries_data = [county["name"] for county in requests.get("https://freetestapi.com/api/v1/countries").json()]
@@ -129,14 +131,42 @@ class newUSer:
                 "hobbies" : hobbies,
                 "bio" : bio,
                 "term_policie":acceptedTerms,
+                "following" : 0,
                 "followers" : 0,
                 "isActive" : 0,
+                "following_list" : {},
                 "followers_list" : {},
                 }
                 self.setUserData(data)
                 self.clearForm()
             else:
                 tkinter.messagebox.showwarning(title="fullname Error", message="terms & policy should be accepted")
+
+        ##################################################
+        #                 Go to my account               #
+        ##################################################
+
+    def myAccount(self):
+        new_window = tkinter.Toplevel(self.root)
+        new_window.title("New Window")
+        new_window.geometry("700x200")
+
+        # Email Label and Entry
+        email_label = tkinter.Label(new_window, text="Email:")
+        email_label.pack(pady=5)
+        email_entry = tkinter.Entry(new_window, width=40)
+        email_entry.pack(pady=5)
+
+        # Password Label and Entry
+        password_label = tkinter.Label(new_window, text="Password:")
+        password_label.pack(pady=10)
+        password_entry = tkinter.Entry(new_window, show="*", width=40)  # show="*" to mask the password
+        password_entry.pack(pady=5)
+        
+
+        # Button to submit
+        submit_button = tkinter.Button(new_window, text="Submit")
+        submit_button.pack(pady=10)
 
         ##################################################
         #                 create new user                #
@@ -235,9 +265,11 @@ class newUSer:
         #                 start by buttons               #
         ##################################################
         save_btn = tkinter.Button(frame, text="Save" ,bg="green",fg="white", command= self.handleForm)
+        account_btn = tkinter.Button(frame, text="Go to my account"  ,bg="blue",fg="white",command=self.myAccount)
         exit_btn = tkinter.Button(frame, text="Exit"  ,bg="red",fg="white",command=self.exitProgram)
         save_btn.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
-        exit_btn.grid(row=4, column=0, padx=10, pady=5, sticky="ew")
+        exit_btn.grid(row=5, column=0, padx=10, pady=5, sticky="ew")
+        account_btn.grid(row=4, column=0, padx=10, pady=5, sticky="ew")
         self.root.mainloop()
 
     
