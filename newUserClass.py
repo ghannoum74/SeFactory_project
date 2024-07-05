@@ -42,6 +42,7 @@ class newUSer:
         ##################################################
         #                 create new user                #
         ##################################################
+
     def addUser(self):
     #title for my GUI program
         self.root.title("Friendship Community")
@@ -263,6 +264,7 @@ class newUSer:
         ##################################################
 
     def loginPage(self):
+        self.login_frame = tkinter.Frame(self.root, padx=20, pady= 20)
         self.login_frame.configure(bg="#eeeeee")
         #to save my frame
         self.login_frame.pack(padx=100, pady=100)
@@ -319,6 +321,7 @@ class newUSer:
         ##################################################
 
     def profilePage(self, user):
+        self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
         self.profile_page_frame.pack(padx=300, pady=100)
         self.profile_page_frame.configure(bg="#eeeeee")
         row = 1
@@ -333,10 +336,10 @@ class newUSer:
             value_label = ttk.Label(self.profile_page_frame, text=f"{value}", font=("Arial", 12))
             value_label.grid(row=row, column=1, sticky="w", pady=5)
             row +=1
-        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white")
+        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=self.handleFollow)
         Follow_btn.grid(row=row + 2, column=0, padx=10, pady=5, sticky="ew")
         logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=self.handleLogout)
-        logout_btn.grid(row=row + 1, column=0, padx=10, pady=5, sticky="ew")
+        logout_btn.grid(row=row + 1, column=0, padx=10, pady=5, sticky="ew",)
 
         ##################################################
         #                  handle logout                 #
@@ -346,4 +349,29 @@ class newUSer:
         self.profile_page_frame.destroy()
         self.addUser()
 
+        ##################################################
+        #                  handle Follow                 #
+        ##################################################
         
+    def handleFollow(self):
+        self.profile_page_frame.destroy()
+        self.usersPage()
+
+        ##################################################
+        #                  users Page                    #
+        ##################################################
+    def usersPage(self):
+        self.follow_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
+        self.follow_page_frame.pack(padx=300, pady=100)
+        self.follow_page_frame.configure(bg="#eeeeee")
+    #get data from data base
+        with open('userDB.json','r') as file:
+            users = json.load(file)
+        row = 0
+        for key, value in users.items():
+            fullname = ttk.Label(self.follow_page_frame, text=f"Full name : {value['fullname']}",font=("Arial", 12))
+            fullname.grid(row=row, column=0, sticky="w", pady=5)
+            row += 1
+            email = ttk.Label(self.follow_page_frame, text=f"Email : {key}", font=("Arial", 12))
+            email.grid(row=row, column=0, sticky="w", pady=5)
+            row +=1
