@@ -366,13 +366,19 @@ class newUSer:
         header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
         header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
 
-    
+    def createFollowPageFrame(self):
+    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
+        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
+        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
+        self.follow_page_frame.configure(bg="#eeeeee")
+
     def followPage(self, current_user, filtred_users):
-    #so when i filter the data i passed the new data from handleFilter function
+    #so when i filter the data is passed the new data from handleFilter function
         users = None
         if filtred_users :
             users = filtred_users
         else :
+        #then the user enter reset or dont find a similiarity
         #get all data from data base
             with open('userDB.json','r') as file:
                 users = json.load(file)
@@ -384,10 +390,9 @@ class newUSer:
     #create header for page
         self.createHeader(current_user)
 
-    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
-        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
-        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
-        self.follow_page_frame.configure(bg="#eeeeee")
+    #create follow page frame
+        self.createFollowPageFrame()
+
 
     #create canvas for scrolling 
         my_canvas = tkinter.Canvas(self.follow_page_frame, width=900, height=600)
@@ -405,8 +410,7 @@ class newUSer:
     #create like filter to filter by some data
         filter_value = ['hobbies', 'fullname', 'nationality', 'reset']
         self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
-        filter_hint = tkinter.Label(self.follow_page_frame, text=self.filter_input.get() or "No filtring till now...",fg="#ccc",font=('Arial', 25))
-        filter_hint.grid(row = 1, column = 1, pady=10)
+
     #to add the functionality 
         self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, users))
 
@@ -451,15 +455,18 @@ class newUSer:
     def handleFilter(self, current_user, users):
         filtred_data = {}
         filter_by = self.filter_input.get()
-        for outerkey, outervalue in users.items():
-             for innerkey, innervalue in outervalue.items():
-                    if innerkey == filter_by :
-                        if innervalue and innervalue == current_user[filter_by] :
-                              filtred_data[outerkey] = outervalue
+    #reset form so re render the whole data
+        if filter_by == 'reset':
+            self.followPage(current_user,None)
+            return
+        for email, full_data in users.items():
+    #first check if full_data[filter_by] not empty
+            if full_data[filter_by] and full_data[filter_by] == current_user[filter_by]:
+                filtred_data[email] = full_data
 
         if filtred_data :
             self.followPage(current_user,filtred_data)
         else:
             tkinter.messagebox.showinfo(title="Filter result" , message="No one share with you the same hobbies...because you're AWESOME!!!")
-            users = None
-            self.followPage(current_user, users) 
+            filtred_data = None
+            self.followPage(current_user, filtred_data) 
