@@ -361,6 +361,12 @@ class newUSer:
         ##################################################
         #                  users Page                    #
         ##################################################
+
+    def createHeader(self, current_user):
+        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
+        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
+
+    
     def followPage(self, current_user, filtred_users):
     #so when i filter the data i passed the new data from handleFilter function
         users = None
@@ -376,8 +382,7 @@ class newUSer:
         self.root.configure(bg="#ececec", width=880)
 
     #create header for page
-        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
-        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
+        self.createHeader(current_user)
 
     #user is the data for user which i log in by so i won't see in my users list because i can't follow it
         self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
@@ -398,10 +403,13 @@ class newUSer:
         my_canvas.create_window((0 , 0), window = second_frame, anchor = 'nw')
 
     #create like filter to filter by some data
-        filter_value = ['hobbies', 'fullname', 'nationality']
+        filter_value = ['hobbies', 'fullname', 'nationality', 'reset']
         self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
+        filter_hint = tkinter.Label(self.follow_page_frame, text=self.filter_input.get() or "No filtring till now...",fg="#ccc",font=('Arial', 25))
+        filter_hint.grid(row = 1, column = 1, pady=10)
     #to add the functionality 
         self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, users))
+
         self.filter_input.set("Filter By")
         self.filter_input.grid(row= 0, column= 1)
         
@@ -448,7 +456,10 @@ class newUSer:
                     if innerkey == filter_by :
                         if innervalue and innervalue == current_user[filter_by] :
                               filtred_data[outerkey] = outervalue
+
         if filtred_data :
-            self.followPage(current_user,filtred_data )
+            self.followPage(current_user,filtred_data)
         else:
-            self.followPage(current_user, users)
+            tkinter.messagebox.showinfo(title="Filter result" , message="No one share with you the same hobbies...because you're AWESOME!!!")
+            users = None
+            self.followPage(current_user, users) 
