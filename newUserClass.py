@@ -336,7 +336,8 @@ class newUSer:
             value_label = ttk.Label(self.profile_page_frame, text=f"{value}", font=("Arial", 12))
             value_label.grid(row=row, column=1, sticky="w", pady=5)
             row +=1
-        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=self.handleFollow)
+        #lambda is like ()=> ananymus function in js so now i can pass parameter for the follow page
+        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=lambda: self.handleFollow(user, filtred_user=None))
         Follow_btn.grid(row=row + 2, column=0, padx=10, pady=5, sticky="ew")
         logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=self.handleLogout)
         logout_btn.grid(row=row + 1, column=0, padx=10, pady=5, sticky="ew",)
@@ -353,25 +354,101 @@ class newUSer:
         #                  handle Follow                 #
         ##################################################
         
-    def handleFollow(self):
+    def handleFollow(self, user):
         self.profile_page_frame.destroy()
-        self.usersPage()
+        self.followPage(user)
 
         ##################################################
         #                  users Page                    #
         ##################################################
-    def usersPage(self):
-        self.follow_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
-        self.follow_page_frame.pack(padx=300, pady=100)
+    def followPage(self, current_user, filtred_users):
+    #so when i filter the data i passed the new data from handleFilter function
+        users = None
+        if filtred_users :
+            users = filtred_users
+        else :
+        #get all data from data base
+            with open('userDB.json','r') as file:
+                users = json.load(file)
+
+        self.root.title("Friendship Community")
+    #nested component in my window
+        self.root.configure(bg="#ececec", width=880)
+
+    #create header for page
+        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
+        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
+
+    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
+        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
+        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
         self.follow_page_frame.configure(bg="#eeeeee")
-    #get data from data base
-        with open('userDB.json','r') as file:
-            users = json.load(file)
+
+    #create canvas for scrolling 
+        my_canvas = tkinter.Canvas(self.follow_page_frame, width=900, height=600)
+        my_canvas.grid(row=4, column=0, sticky="nsew", columnspan=2)
+
+        #add scroll bar
+        my_scrollbar = tkinter.Scrollbar(self.follow_page_frame , orient="vertical", command=my_canvas.yview)
+        my_scrollbar.grid(row=4, column=2, sticky="ns")
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        
+        second_frame = tkinter.Frame(my_canvas)
+        my_canvas.create_window((0 , 0), window = second_frame, anchor = 'nw')
+
+    #create like filter to filter by some data
+        filter_value = ['hobbies', 'fullname', 'nationality']
+        self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
+    #to add the functionality 
+        self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, users))
+        self.filter_input.set("Filter By")
+        self.filter_input.grid(row= 0, column= 1)
+        
+        col = 0
         row = 0
-        for key, value in users.items():
-            fullname = ttk.Label(self.follow_page_frame, text=f"Full name : {value['fullname']}",font=("Arial", 12))
-            fullname.grid(row=row, column=0, sticky="w", pady=5)
-            row += 1
-            email = ttk.Label(self.follow_page_frame, text=f"Email : {key}", font=("Arial", 12))
-            email.grid(row=row, column=0, sticky="w", pady=5)
-            row +=1
+        for email, user_data in users.items():
+            if col % 3 == 0:
+                 row += 1
+                 col = 0
+            # Skip the current logged-in user
+            if email == current_user['email']:
+                continue
+            
+            # Create a frame for each user
+            user_frame = tkinter.LabelFrame(second_frame, bg="#f5f5f5", text=email, padx=50, pady=10)
+            user_frame.grid(row=row, column=col, padx=10, pady=10, sticky="w")
+
+            # Display user details
+            for user_key, user_value in user_data.items():
+                if user_key == 'term_policie' or user_key == 'password' or user_key == 'email':
+                    continue
+                if user_key == 'isActive':
+                     break
+                tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5").grid(
+                    sticky="w", pady=5)
+            follow_btn = tkinter.Button(second_frame, text="Follow", bg="blue", fg="white")
+            follow_btn.grid(row=row , column=col, padx=10, pady=5, sticky="ew")
+            col +=1
+
+        my_canvas.update_idletasks()  # update canvas idle tasks
+        my_canvas.create_window((0, 0), window=second_frame, anchor='nw')
+        my_canvas.configure(scrollregion=my_canvas.bbox("all"))
+        self.root.mainloop()
+
+        ##################################################
+        #                  users Page                    #
+        ##################################################
+
+    def handleFilter(self, current_user, users):
+        filtred_data = {}
+        filter_by = self.filter_input.get()
+        for outerkey, outervalue in users.items():
+             for innerkey, innervalue in outervalue.items():
+                    if innerkey == filter_by :
+                        if innervalue and innervalue == current_user[filter_by] :
+                              filtred_data[outerkey] = outervalue
+        if filtred_data :
+            self.followPage(current_user,filtred_data )
+        else:
+            self.followPage(current_user, users)
