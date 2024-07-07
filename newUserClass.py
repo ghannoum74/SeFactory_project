@@ -213,11 +213,6 @@ class NewUser:
             tkinter.messagebox.showerror(title="Email Exist" , message="Email is already in use...please try another one or log in")
         else :
             tkinter.messagebox.showinfo(title="Adding user successfuly", message=f"{data['email']} have been added successfuly :)")
-            with open("userDB.json", 'r') as file:
-                users_data = json.load(file)
-            users_data[data['email']] = data
-            with open('userDB.json', 'w') as file :
-                json.dump(users_data, file)
 
 
         ##################################################
