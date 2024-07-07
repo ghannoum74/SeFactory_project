@@ -5,18 +5,18 @@ import tkinter.messagebox
 from tkinter import ttk
 from tkinter import messagebox 
 import json
-
-class newUSer:
+from project_abdelrahman_ghannoum import FriendshipCommunity
+class NewUser:
     def __init__(self) -> None:
         self.fullname_input = ""
-        self.hobbies_input= ""
-        self.bio_input = ""
+        self.hobbies_input= None
+        self.bio_input = None
         self.age_spinbox = ""
         self.gender_combobox = ""
         self.nationality_input = ""
         self.email_input = ""
         self.password_input = ""
-        self.term_var = False
+        self.term_var = False   
         self.following = 0
         self.followers = 0
         self.isActive = False
@@ -38,8 +38,11 @@ class newUSer:
         self.password_login = ""
     #for profile page
         self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
-        
-
+    #create instance to use it in my all class
+    # i create it here not in the setData function because when i want to add many vetex i want all these data store it in one instance which is this
+    # not for each calling for new setData create new instance
+    # this how i can check if vertex added is already exist or not 
+        self.friend = FriendshipCommunity()
         ##################################################
         #                 create new user                #
         ##################################################
@@ -190,7 +193,7 @@ class newUSer:
                 "term_policie":acceptedTerms,
                 "following" : 0,
                 "followers" : 0,
-                "isActive" : 0,
+                "isActive" : False,
                 "following_list" : {},
                 "followers_list" : {},
                 }
@@ -204,18 +207,17 @@ class newUSer:
         ##################################################
 
     def setUserData(self, data):
-    #check if data already exist in my self.user_data dictionary
-    #so self.user_data dictionary here is like small DB 
 
-        self.user_data[data['email']] = data
-        with open("userDB.json", 'r') as file:
-            existing_data = json.load(file)
-        if data['email'] in existing_data:
+        result = self.friend.register(data)
+        if not result :
             tkinter.messagebox.showerror(title="Email Exist" , message="Email is already in use...please try another one or log in")
         else :
-            existing_data[data['email']] = data
-            with open("userDB.json", 'w') as file:
-                json.dump(existing_data, file)
+            tkinter.messagebox.showinfo(title="Adding user successfuly", message=f"{data['email']} have been added successfuly :)")
+            with open("userDB.json", 'r') as file:
+                users_data = json.load(file)
+            users_data[data['email']] = data
+            with open('userDB.json', 'w') as file :
+                json.dump(users_data, file)
 
 
         ##################################################
@@ -298,25 +300,19 @@ class newUSer:
         elif not re.match("^[a-zA-Z_]{3,}[0-9]@(?:gmail\\.com|hotmail\\.com)$", email):
             tkinter.messagebox.showerror(title="Email Error", message="Email should be as format : Example1@gmail/hotmail.com")
         else:
-            with open('userDB.json', 'r') as file:
-                users = json.load(file)
-                if email in users:
-                    if password == users[email]['password']:
-                #set is active true
-                        users[email]['isActive'] = True
-                        self.switch_to_profile(users[email])
-                    else:
-                        tkinter.messagebox.showerror(title="Login Error", message="Email or password incorrect")
-                else:
-                    tkinter.messagebox.showerror(title="Login Error", message="Email or password incorrect")
-    
+            result =  self.friend.login(email, password)
+            if not result:
+                tkinter.messagebox.showerror(title="Login Error", message="Email or password incorrect")
+            else:
+                tkinter.messagebox.showinfo(title="Login successfull", message="Login successful :)")
+                self.switch_to_profile(result)
         ##################################################
         #                 switch to Profile              #
         ##################################################
                  
-    def switch_to_profile(self, user_email):
+    def switch_to_profile(self, user):
             self.login_frame.destroy()
-            self.profilePage(user_email)
+            self.profilePage(user)
 
         ##################################################
         #                  Profile page                  #
@@ -331,6 +327,8 @@ class newUSer:
         header_label.grid(row=0, column=0, sticky="w", pady=5)
         for key, value in user.items():
             # Create label for key
+            if key == 'term_policie':
+                continue
             key_label = ttk.Label(self.profile_page_frame, text=f"{key.capitalize()}: ", font=("Arial", 12, "bold"))
             key_label.grid(row=row, column=0, sticky="w", pady=5)
 
@@ -341,15 +339,16 @@ class newUSer:
         #lambda is like ()=> ananymus function in js so now i can pass parameter for the follow page
         Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=lambda: self.handleFollow(user, filtred_user=None))
         Follow_btn.grid(row=row + 2, column=0, padx=10, pady=5, sticky="ew")
-        logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=self.handleLogout)
+        logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=lambda e:self.handleLogout(user))
         logout_btn.grid(row=row + 1, column=0, padx=10, pady=5, sticky="ew",)
 
         ##################################################
         #                  handle logout                 #
         ##################################################
         
-    def handleLogout(self):
+    def handleLogout(self, user):
         self.profile_page_frame.destroy()
+        user['isActive'] = False
         self.addUser()
 
         ##################################################
@@ -503,30 +502,32 @@ class newUSer:
         ##################################################
 
     def trigger_follow(self, current_user_email, user_to_follow_email):
-        from project_abdelrahman_ghannoum import FriendshipCommunity
+        
         friend_community = FriendshipCommunity()
         result = friend_community.follow(current_user_email, user_to_follow_email)
         tkinter.messagebox.showinfo(title="Follow Result", message=result)
+        friend_community.displayFriendList()
 
 
 
 
 def main():
-    app = newUSer()
-    app.followPage({
-        "fullname": "aboud",
-        "age": "13",
-        "gender": "Male",
-        "email": "aboud1@gmail.com",
-        "password": "Aboud123!",
-        "nationality": "Algeria",
-        "hobbies": "swiming",
-        "bio": "welcome to my account",
-        "term_policie": "1",
-        "followers": 0,
-        "following": 0,
-        "isActive": 0,
-        "followers_list": {},
-        "following_list": {}
-    },None)
+    app = NewUser()
+    app.addUser()
+    # app.followPage({
+    #     "fullname": "aboud",
+    #     "age": "13",
+    #     "gender": "Male",
+    #     "email": "aboud1@gmail.com",
+    #     "password": "Aboud123!",
+    #     "nationality": "Algeria",
+    #     "hobbies": "swiming",
+    #     "bio": "welcome to my account",
+    #     "term_policie": "1",
+    #     "followers": 0,
+    #     "following": 0,
+    #     "isActive": 0,
+    #     "followers_list": {},
+    #     "following_list": {}
+    # },None)
 main()

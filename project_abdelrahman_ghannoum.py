@@ -52,12 +52,12 @@ class FriendsList:
         print(f"{destinationuser['fullname']} has been added successfuly")
         self.size += 1
     #update  data to DB
-        with open('userDB.json', 'r+') as file:
-            user = json.load(file)
-            user[destinationuser['email']] = destinationuser
-    #to move the pointer to beginning
-            file.seek(0) 
-            json.dump(user, file, indent=4)
+        with open("userDB.json", 'r') as file:
+            users_data = json.load(file)
+        users_data[destinationuser['email']] = destinationuser
+        with open('userDB.json', 'w') as file :
+            json.dump(users_data, file)
+        
         
 #it's the same as removeNode
     def removeFriend(self, friend):
@@ -86,11 +86,8 @@ class FriendsList:
 
 
     def displayFriends(self):
-        if self.size == 0:
-            print("list is empty")
-        else:
-            current = self.head
             friends = []
+            current = self.head
             while current :
                 friend_data = {
                     "fullname" : current.fullname,
@@ -115,21 +112,34 @@ class FriendsList:
 class FriendshipCommunity:
     def __init__(self) -> None:
         self.adj_list = {}
-
     #initial self.adj_list by all the users in the DB
-        with open("userDB.json", "r") as file:
-            all_users = json.load(file)
-        for user in all_users:
-            self.adj_list[user] = FriendsList()
-        
-    #add new user to the adj_list
-    def createUser(self):
-        pass
+    #so when i exit this program and comeback i will not use these data
+        # with open("userDB.json", "r") as file:
+        #     all_users = json.load(file)
+        # for user in all_users:
+        #     self.adj_list[user] = FriendsList()
 
-    #     #no need to manage if user exist because i already managed in my GUI
-    #     self.adj_list[user] = FriendsList()
-    
+    #add new user to the adj_list
+    def register(self, user):
+    #i used this algorith in the setUserData in
+        if user['email'] not in self.adj_list:
+            self.adj_list[user['email']] = FriendsList()
+            self.loadUser(user)
+            return True
+        else :
+            return False
+        
+    def displayFriendList(self):
+        
+        if self.adj_list == {}:
+            print("Graph is empty!\n")
+        else :
+            for vertex in self.adj_list:
+                friends = self.adj_list[vertex].displayFriends()
+                print(vertex + ":", friends if friends else "No friends :(")
+        
     def follow(self, sourceUser, destinationUser):
+
         with open("userDB.json", "r") as file:
             all_users = json.load(file)
         
@@ -147,48 +157,23 @@ class FriendshipCommunity:
         elif destinationUser['email'] not in self.adj_list:
             return("Invalid",destinationUser['email'])
 
-    def displayFriendList(self):
-        
-        if self.adj_list == {}:
-            print("Graph is empty!\n")
-            return
-        else :
-            for vertex in self.adj_list:
-                print(vertex + ":", self.adj_list[vertex].displayFriends())
-        
+    def login(self, email, password):
+        with open('userDB.json', 'r') as file:
+            users = json.load(file)
+        if email in users:
+            if password == users[email]['password']:
+        #set is active true
+                users[email]['isActive'] = True
+        #return data for user
+                return users[email]
+            else:
+                return False
+        else:
+            return False
 
-# def main():
-#     friend = FriendshipCommunity()
-#     friend.createUser()
-#     # friend.follow({ "fullname": "aboud", "age": "13", "gender": "Female", "email": "aboud1@gmail.com", "password": "Aboud123!", "nationality": "Algeria", "hobbies": "", "bio": "", "term_policie": "1", "followers": 0, "following": 0, "isActive": 0, "followers_list": {}, "following_list": {}
-#     # },{
-#     #     "fullname": "aboud",
-#     #     "age": "13",
-#     #     "gender": "Female",
-#     #     "email": "aboud2@gmail.com",
-#     #     "password": "Aboud123!",
-#     #     "nationality": "Algeria",
-#     #     "hobbies": "",
-#     #     "bio": "",
-#     #     "term_policie": "1",
-#     #     "following": 0,
-#     #     "followers": 0,
-#     #     "isActive": 0,
-#     #     "followers_list": {
-#     #         "aboud3@gmail.com": "aboud3@gmail.com"
-#     #     },
-#     #     "following_list": {}
-#     # },)
-#     # friend.follow("aboud2@gmail.com","ghannoum8@gmail.com")
-#     # friend.follow("aboud2@gmail.com","ghann1@gmail.com")
-#     # friend.displayFriendList()
-#     # friend.follow("abo2@gmail.com","gha9@gmail.com")
-#     # friend.follow("abou@gmail.com","ghann1@gmail.com")
-#     # friend.follow("aboud2@gmail.com","ghann2@gmail.com")
-#     # friend.displayFriendList()
-# main()
-    
-
-        
-
-    
+    def loadUser(self, user_data):
+        with open("userDB.json", 'r') as file:
+            users_data = json.load(file)
+        users_data[user_data['email']] = user_data
+        with open('userDB.json', 'w') as file :
+            json.dump(users_data, file)
