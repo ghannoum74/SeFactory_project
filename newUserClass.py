@@ -5,6 +5,7 @@ import tkinter.messagebox
 from tkinter import ttk
 from tkinter import messagebox 
 import json
+
 class newUSer:
     def __init__(self) -> None:
         self.fullname_input = ""
@@ -205,6 +206,7 @@ class newUSer:
     def setUserData(self, data):
     #check if data already exist in my self.user_data dictionary
     #so self.user_data dictionary here is like small DB 
+
         self.user_data[data['email']] = data
         with open("userDB.json", 'r') as file:
             existing_data = json.load(file)
@@ -351,26 +353,17 @@ class newUSer:
         self.addUser()
 
         ##################################################
-        #                  handle Follow                 #
+        #                  handle FollowPage              #
         ##################################################
         
     def handleFollow(self, user):
         self.profile_page_frame.destroy()
         self.followPage(user)
 
-        ##################################################
-        #                  users Page                    #
-        ##################################################
 
-    def createHeader(self, current_user):
-        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
-        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
-
-    def createFollowPageFrame(self):
-    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
-        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
-        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
-        self.follow_page_frame.configure(bg="#eeeeee")
+        ##################################################
+        #                  follow Page                   #
+        ##################################################
 
     def followPage(self, current_user, filtred_users):
     #so when i filter the data is passed the new data from handleFilter function
@@ -395,7 +388,7 @@ class newUSer:
 
 
     #create canvas for scrolling 
-        my_canvas = tkinter.Canvas(self.follow_page_frame, width=900, height=600)
+        my_canvas = tkinter.Canvas(self.follow_page_frame, width=1200, height=600)
         my_canvas.grid(row=4, column=0, sticky="nsew", columnspan=2)
 
         #add scroll bar
@@ -416,40 +409,69 @@ class newUSer:
 
         self.filter_input.set("Filter By")
         self.filter_input.grid(row= 0, column= 1)
+
+        row, col = 0, 0
+        max_cols = 3  # Set a maximum number of columns
         
-        col = 0
-        row = 0
         for email, user_data in users.items():
-            if col % 3 == 0:
-                 row += 1
-                 col = 0
-            # Skip the current logged-in user
+            if col % max_cols == 0:
+                row += 1
+                col = 0
+            
             if email == current_user['email']:
                 continue
             
-            # Create a frame for each user
             user_frame = tkinter.LabelFrame(second_frame, bg="#f5f5f5", text=email, padx=50, pady=10)
             user_frame.grid(row=row, column=col, padx=10, pady=10, sticky="w")
-
-            # Display user details
+            
+            max_label_length = 0
+            
             for user_key, user_value in user_data.items():
-                if user_key == 'term_policie' or user_key == 'password' or user_key == 'email':
+    #skip these data because it not make since to display password
+                if user_key in ['term_policie', 'password', 'email']:
                     continue
+                label = tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5")
+                label.grid(sticky="w", pady=5)
+                
+                label_length = len(f"{user_key}: {user_value}")
+                if label_length > max_label_length:
+                    max_label_length = label_length
+    #stop showing display other data 
                 if user_key == 'isActive':
-                     break
-                tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5").grid(
-                    sticky="w", pady=5)
-            follow_btn = tkinter.Button(second_frame, text="Follow", bg="blue", fg="white")
-            follow_btn.grid(row=row , column=col, padx=10, pady=5, sticky="ew")
-            col +=1
-
-        my_canvas.update_idletasks()  # update canvas idle tasks
+                    break
+            
+            follow_btn = tkinter.Button(user_frame, text="Follow", bg="blue", fg="white", command=lambda user = user_data: self.trigger_follow(current_user, user))
+            follow_btn.grid(padx=10, pady=5, sticky="ew")
+            
+            user_frame.grid_propagate(False)
+            user_frame.config(width=300, height=350 + (max_label_length * 2))
+            
+            col += 1
+        my_canvas.update_idletasks() 
         my_canvas.create_window((0, 0), window=second_frame, anchor='nw')
         my_canvas.configure(scrollregion=my_canvas.bbox("all"))
         self.root.mainloop()
 
         ##################################################
-        #                  users Page                    #
+        #                  createHeader                  #
+        ##################################################
+
+    def createHeader(self, current_user):
+        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
+        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
+
+        ##################################################
+        #              createFollowPageFrame             #
+        ##################################################
+
+    def createFollowPageFrame(self):
+    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
+        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
+        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
+        self.follow_page_frame.configure(bg="#eeeeee")
+
+        ##################################################
+        #                  handleFilter                  #
         ##################################################
 
     def handleFilter(self, current_user, users):
@@ -459,14 +481,52 @@ class newUSer:
         if filter_by == 'reset':
             self.followPage(current_user,None)
             return
+        
+    #check if the current already have filter_by data
+        if not current_user[filter_by]:
+                tkinter.messagebox.showinfo(title="Filter result" , message=f"You didn't have any {filter_by} to filter by")
+
         for email, full_data in users.items():
-    #first check if full_data[filter_by] not empty
-            if full_data[filter_by] and full_data[filter_by] == current_user[filter_by]:
+
+            if  current_user[filter_by] in full_data[filter_by]:
                 filtred_data[email] = full_data
 
         if filtred_data :
             self.followPage(current_user,filtred_data)
         else:
-            tkinter.messagebox.showinfo(title="Filter result" , message="No one share with you the same hobbies...because you're AWESOME!!!")
+            tkinter.messagebox.showinfo(title="Filter result" , message=f"No one share with you the same {filter_by}...because you're AWESOME!!!")
             filtred_data = None
             self.followPage(current_user, filtred_data) 
+
+        ##################################################
+        #                  FOllow function               #
+        ##################################################
+
+    def trigger_follow(self, current_user_email, user_to_follow_email):
+        from project_abdelrahman_ghannoum import FriendshipCommunity
+        friend_community = FriendshipCommunity()
+        result = friend_community.follow(current_user_email, user_to_follow_email)
+        tkinter.messagebox.showinfo(title="Follow Result", message=result)
+
+
+
+
+def main():
+    app = newUSer()
+    app.followPage({
+        "fullname": "aboud",
+        "age": "13",
+        "gender": "Male",
+        "email": "aboud1@gmail.com",
+        "password": "Aboud123!",
+        "nationality": "Algeria",
+        "hobbies": "swiming",
+        "bio": "welcome to my account",
+        "term_policie": "1",
+        "followers": 0,
+        "following": 0,
+        "isActive": 0,
+        "followers_list": {},
+        "following_list": {}
+    },None)
+main()

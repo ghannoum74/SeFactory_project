@@ -1,6 +1,6 @@
 import json
 # from addNewUser import addUser
-from newUserClass import newUSer
+
 class UserNode:
     
     def __init__(self, friendsData) -> None:
@@ -124,11 +124,10 @@ class FriendshipCommunity:
         
     #add new user to the adj_list
     def createUser(self):
-        user = newUSer()
-        user.addUser()
+        pass
 
-        #no need to manage if user exist because i already managed in my GUI
-        self.adj_list[user] = FriendsList()
+    #     #no need to manage if user exist because i already managed in my GUI
+    #     self.adj_list[user] = FriendsList()
     
     def follow(self, sourceUser, destinationUser):
         with open("userDB.json", "r") as file:
@@ -137,13 +136,16 @@ class FriendshipCommunity:
         #checking if email for source and destination because with email vertesis are stored
         if sourceUser['email'] in self.adj_list and destinationUser['email'] in self.adj_list:
             self.adj_list[sourceUser['email']].addFriend(destinationUser, sourceUser)
-            print(f"You are now friend with {destinationUser['email']}")
+            return(f"You are now friend with {destinationUser['email']}")
+        
         elif sourceUser['email'] not in self.adj_list and destinationUser['email'] not in self.adj_list:
-            print("Invalid","and",destinationUser['email'])
+            return("Invalid", sourceUser['email'], "and", destinationUser['email'])
+        
         elif sourceUser['email'] not in self.adj_list:
-            print("Invalid", sourceUser['email'])
+            return("Invalid", sourceUser['email'])
+        
         elif destinationUser['email'] not in self.adj_list:
-            print("Invalid",destinationUser['email'])
+            return("Invalid",destinationUser['email'])
 
     def displayFriendList(self):
         
@@ -155,36 +157,36 @@ class FriendshipCommunity:
                 print(vertex + ":", self.adj_list[vertex].displayFriends())
         
 
-def main():
-    friend = FriendshipCommunity()
-    friend.createUser()
-    # friend.follow({ "fullname": "aboud", "age": "13", "gender": "Female", "email": "aboud1@gmail.com", "password": "Aboud123!", "nationality": "Algeria", "hobbies": "", "bio": "", "term_policie": "1", "followers": 0, "following": 0, "isActive": 0, "followers_list": {}, "following_list": {}
-    # },{
-    #     "fullname": "aboud",
-    #     "age": "13",
-    #     "gender": "Female",
-    #     "email": "aboud2@gmail.com",
-    #     "password": "Aboud123!",
-    #     "nationality": "Algeria",
-    #     "hobbies": "",
-    #     "bio": "",
-    #     "term_policie": "1",
-    #     "following": 0,
-    #     "followers": 0,
-    #     "isActive": 0,
-    #     "followers_list": {
-    #         "aboud3@gmail.com": "aboud3@gmail.com"
-    #     },
-    #     "following_list": {}
-    # },)
-    # friend.follow("aboud2@gmail.com","ghannoum8@gmail.com")
-    # friend.follow("aboud2@gmail.com","ghann1@gmail.com")
-    # friend.displayFriendList()
-    # friend.follow("abo2@gmail.com","gha9@gmail.com")
-    # friend.follow("abou@gmail.com","ghann1@gmail.com")
-    # friend.follow("aboud2@gmail.com","ghann2@gmail.com")
-    # friend.displayFriendList()
-main()
+# def main():
+#     friend = FriendshipCommunity()
+#     friend.createUser()
+#     # friend.follow({ "fullname": "aboud", "age": "13", "gender": "Female", "email": "aboud1@gmail.com", "password": "Aboud123!", "nationality": "Algeria", "hobbies": "", "bio": "", "term_policie": "1", "followers": 0, "following": 0, "isActive": 0, "followers_list": {}, "following_list": {}
+#     # },{
+#     #     "fullname": "aboud",
+#     #     "age": "13",
+#     #     "gender": "Female",
+#     #     "email": "aboud2@gmail.com",
+#     #     "password": "Aboud123!",
+#     #     "nationality": "Algeria",
+#     #     "hobbies": "",
+#     #     "bio": "",
+#     #     "term_policie": "1",
+#     #     "following": 0,
+#     #     "followers": 0,
+#     #     "isActive": 0,
+#     #     "followers_list": {
+#     #         "aboud3@gmail.com": "aboud3@gmail.com"
+#     #     },
+#     #     "following_list": {}
+#     # },)
+#     # friend.follow("aboud2@gmail.com","ghannoum8@gmail.com")
+#     # friend.follow("aboud2@gmail.com","ghann1@gmail.com")
+#     # friend.displayFriendList()
+#     # friend.follow("abo2@gmail.com","gha9@gmail.com")
+#     # friend.follow("abou@gmail.com","ghann1@gmail.com")
+#     # friend.follow("aboud2@gmail.com","ghann2@gmail.com")
+#     # friend.displayFriendList()
+# main()
     
 
         
