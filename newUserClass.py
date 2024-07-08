@@ -314,6 +314,7 @@ class NewUser:
         ##################################################
 
     def profilePage(self, user):
+        
         self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
         self.profile_page_frame.pack(padx=300, pady=100)
         self.profile_page_frame.configure(bg="#eeeeee")
@@ -332,18 +333,18 @@ class NewUser:
             value_label.grid(row=row, column=1, sticky="w", pady=5)
             row +=1
         #lambda is like ()=> ananymus function in js so now i can pass parameter for the follow page
-        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=lambda: self.handleFollow(user, filtred_user=None))
+        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=lambda : self.handleFollow(user))
         Follow_btn.grid(row=row + 2, column=0, padx=10, pady=5, sticky="ew")
-        logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=lambda e:self.handleLogout(user))
+        logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=lambda :self.handleLogout(user))
         logout_btn.grid(row=row + 1, column=0, padx=10, pady=5, sticky="ew",)
-
+        
         ##################################################
         #                  handle logout                 #
         ##################################################
         
     def handleLogout(self, user):
-        self.profile_page_frame.destroy()
         user['isActive'] = False
+        self.profile_page_frame.destroy()
         self.addUser()
 
         ##################################################
@@ -359,7 +360,7 @@ class NewUser:
         #                  follow Page                   #
         ##################################################
 
-    def followPage(self, current_user, filtred_users):
+    def followPage(self, current_user, filtred_users= None):
     #so when i filter the data is passed the new data from handleFilter function
         users = None
         if filtred_users :
@@ -415,7 +416,7 @@ class NewUser:
             if email == current_user['email']:
                 continue
             
-            user_frame = tkinter.LabelFrame(second_frame, bg="#f5f5f5", text=email, padx=50, pady=10)
+            user_frame = tkinter.LabelFrame(second_frame, bg="#f5f5f5", text=email, padx=50, pady=10, highlightbackground='red', highlightthickness=2)
             user_frame.grid(row=row, column=col, padx=10, pady=10, sticky="w")
             
             max_label_length = 0
@@ -424,21 +425,21 @@ class NewUser:
     #skip these data because it not make since to display password
                 if user_key in ['term_policie', 'password', 'email']:
                     continue
+    #stop display other data 
+                if user_data['isActive'] == True:
+                    break
                 label = tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5")
                 label.grid(sticky="w", pady=5)
                 
                 label_length = len(f"{user_key}: {user_value}")
                 if label_length > max_label_length:
                     max_label_length = label_length
-    #stop showing display other data 
-                if user_key == 'isActive':
-                    break
             
             follow_btn = tkinter.Button(user_frame, text="Follow", bg="blue", fg="white", command=lambda user = user_data: self.trigger_follow(current_user, user))
             follow_btn.grid(padx=10, pady=5, sticky="ew")
             
             user_frame.grid_propagate(False)
-            user_frame.config(width=300, height=350 + (max_label_length * 2))
+            user_frame.config(width=300, height=400 + (max_label_length * 2))
             
             col += 1
         my_canvas.update_idletasks() 
@@ -498,10 +499,9 @@ class NewUser:
 
     def trigger_follow(self, current_user_email, user_to_follow_email):
         
-        friend_community = FriendshipCommunity()
-        result = friend_community.follow(current_user_email, user_to_follow_email)
+        result = self.friend.follow(current_user_email, user_to_follow_email)
         tkinter.messagebox.showinfo(title="Follow Result", message=result)
-        friend_community.displayFriendList()
+        self.friend.displayFriendList()
 
 
 
@@ -509,7 +509,23 @@ class NewUser:
 def main():
     app = NewUser()
     app.addUser()
-    # app.followPage({
+#     app.followPage({
+#     "fullname": "samir",
+#     "age": "20",
+#     "gender": "Male",
+#     "email": "samir1@gmail.com",
+#     "password": "Samir123!",
+#     "nationality": "Andorra",
+#     "hobbies": "swiming",
+#     "bio": "",
+#     "term_policie": "1",
+#     "following": 0,
+#     "followers": 0,
+#     "isActive": False,
+#     "following_list": {},
+#     "followers_list": {}
+#   })
+#     # app.followPage({
     #     "fullname": "aboud",
     #     "age": "13",
     #     "gender": "Male",
