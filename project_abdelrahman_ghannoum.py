@@ -7,7 +7,7 @@ class UserNode:
         self.fullname = friendsData["fullname"]
         self.age = friendsData["age"]
         self.gender = friendsData["gender"]
-        # self.password = friendsData["password"]
+        self.password = friendsData["password"]
         self.nationality = friendsData["nationality"] 
         self.hobbies= friendsData["hobbies"]
         self.bio = friendsData["bio"]
@@ -22,14 +22,13 @@ class UserNode:
         self.next = None
         pass
 
-    def addFollowing(self):
-        self.following += 1
-        # self.following_list.append(friend_email)
-
-    def addFollowers(self, followingUser):
-        self.followers_list[followingUser] = followingUser
+    def addFollowers(self, sourceUser):
+    #add to (dictionary) followers list source by key is the email of source and values sourceUser
+    #self refere to destination
+        self.followers_list[self.followers + 1] = sourceUser['email']
         self.followers += 1
-
+        return [self.followers_list, self.followers]
+    
 #It's our linked list for the friends of vertesis
 class FriendsList:
     def __init__(self) -> None:
@@ -47,27 +46,30 @@ class FriendsList:
     
 #it's the same as addnode
     def addFriend(self,sourceUser, destinationUser):
+    
     #creation successfuly
         friend = UserNode(destinationUser)
         result = self.checkingFriend(friend)
         if not result:
-        #add friend to the its own destinationuser_list 
-            friend.addFollowers(sourceUser['email'])
-        #add node to linked list 
+
+        #add friend to the its own destinationuser_list and increament followers by 1
+            result_followers = friend.addFollowers(sourceUser)
+
+            result_following = self.addFollowing(sourceUser, destinationUser)
+            #add node to linked list 
             friend.next = self.head
             self.head = friend
-        #save to DB the change
             print(f"{destinationUser['fullname']} has been added successfuly")
             self.size += 1
-            sourceUser['following'] += self.size
-        #update  data to DB
-            with open("userDB.json", 'r') as file:
-                users_data = json.load(file)
-            users_data[destinationUser['email']] = destinationUser
-            with open('userDB.json', 'w') as file :
-                json.dump(users_data, file)
+        #add friend to following_list for the source and increment following by 1
+            # self.loadData(sourceUser['email'], destinationUser['email'], result_following, result_followers)
         else :
            return True
+        
+    def addFollowing(self, sourceUser, destinationUser):
+        sourceUser['following_list'] = {sourceUser['following']+ 1 : destinationUser['email']}
+        sourceUser['following'] += 1
+        return [sourceUser['following_list'],sourceUser['following']]
         
 #it's the same as removeNode
     def removeFriend(self, friend):
@@ -118,6 +120,22 @@ class FriendsList:
                 current = current.next
             return friends
 
+    def loadData(self, sourceUSer, destinationUser,  result_following, result_followers):
+        with open("userDB.json", 'r') as file:
+            users_data = json.load(file)
+        users_data[sourceUSer]['following_list'] = result_following[0]
+        users_data[sourceUSer]['following'] = result_following[1]
+        users_data[destinationUser]['followers_list'] = result_followers[0]
+        users_data[destinationUser]['followers'] = result_followers[1]
+        with open('userDB.json', 'w') as file:
+            json.dump(users_data, file)
+        
+    # def reloadRealations(self, destination):
+    #     friend = UserNode(destination)
+    #     friend.next = self.head
+    #     self.head = friend
+    #     print(f"{destination['fullname']} has been added successfuly")
+    #     self.size += 1
 ##################################################
 class FriendshipCommunity:
     def __init__(self) -> None:
@@ -125,11 +143,15 @@ class FriendshipCommunity:
     #initial self.adj_list by all the users in the DB
     #so when i exit this program and comeback i will not use these data
     #Note : i can hide this and start programe from biggining and add two users and only with this two i can add friend
-    #######################note : the data for linked list will desappear when i close but followers and following list not#####################
         with open("userDB.json", "r") as file:
             all_users = json.load(file)
         for user in all_users:
             self.adj_list[user] = FriendsList()
+        #     if all_users[user] ['followers_list']:
+        #         for follower_key, follower_data in all_users[user]['following_list'].items():
+        #             self.adj_list[user].addFriend(self.adj_list[user], all_users[follower_data])
+        #         # else:
+        #             pass
         self.displayFriendList()
 
     #add new user to the adj_list
@@ -152,13 +174,13 @@ class FriendshipCommunity:
                 print(vertex + ":", friends if friends else "No friends :(")
         
     def follow(self, sourceUser, destinationUser):
-        
-        #checking if email for source and destination because with email vertesis are stored
+        #checking for email for source and destination exist
         if sourceUser['email'] in self.adj_list and destinationUser['email'] in self.adj_list:
     #handle if result = False
             result = self.adj_list[sourceUser['email']].addFriend(sourceUser, destinationUser)
             if result :
                 return(f"You are already friend with {destinationUser['email']}")
+            
             return(f"You are now friend with {destinationUser['email']}")
         
         elif sourceUser['email'] not in self.adj_list and destinationUser['email'] not in self.adj_list:
