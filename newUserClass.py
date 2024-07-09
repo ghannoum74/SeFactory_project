@@ -304,7 +304,6 @@ class NewUser:
         ##################################################
 
     def profilePage(self, user):
-        
         self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
         self.profile_page_frame.pack(padx=300, pady=100)
         self.profile_page_frame.configure(bg="#eeeeee")
@@ -319,7 +318,7 @@ class NewUser:
             key_label.grid(row=row, column=0, sticky="w", pady=5)
 
             # Create label for value
-            value_label = ttk.Label(self.profile_page_frame, text=f"{value}", font=("Arial", 12))
+            value_label = ttk.Label(self.profile_page_frame, text=f"{value}", font=("Arial", 12), wraplength=200, justify="left")
             value_label.grid(row=row, column=1, sticky="w", pady=5)
             row +=1
         #lambda is like ()=> ananymus function in js so now i can pass parameter for the follow page
@@ -351,7 +350,7 @@ class NewUser:
         ##################################################
 
     def followPage(self, current_user, filtred_users= None):
-    #so when i filter the data is passed the new data from handleFilter function
+    #so when filtred_users = None it means filter.value == reset so i reset the whole form
         users = None
         if filtred_users :
             users = filtred_users
@@ -388,9 +387,8 @@ class NewUser:
     #create like filter to filter by some data
         filter_value = ['hobbies', 'fullname', 'nationality', 'reset']
         self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
-
-    #to add the functionality 
-        self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, users))
+    #to add the functionality
+        self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, self.filter_input.get()))
 
         self.filter_input.set("Filter By")
         self.filter_input.grid(row= 0, column= 1)
@@ -418,7 +416,7 @@ class NewUser:
     #stop display other data 
                 if user_data['isActive'] == True:
                     break
-                label = tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5")
+                label = tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5", wraplength=200, justify="left")
                 label.grid(sticky="w", pady=5)
                 
                 label_length = len(f"{user_key}: {user_value}")
@@ -459,29 +457,17 @@ class NewUser:
         #                  handleFilter                  #
         ##################################################
 
-    def handleFilter(self, current_user, users):
-        filtred_data = {}
-        filter_by = self.filter_input.get()
-    #reset form so re render the whole data
-        if filter_by == 'reset':
-            self.followPage(current_user,None)
-            return
-        
-    #check if the current already have filter_by data
-        if not current_user[filter_by]:
-                tkinter.messagebox.showinfo(title="Filter result" , message=f"You didn't have any {filter_by} to filter by")
+    def handleFilter(self, current_user, searching_by):
+        if searching_by == 'reset':
+            self.followPage(current_user, self.user_data)
+        if not current_user[searching_by]:
+           return tkinter.messagebox.showinfo(title="Filter result" , message=f"You didn't even have {searching_by} data")
 
-        for email, full_data in users.items():
-
-            if  current_user[filter_by] in full_data[filter_by]:
-                filtred_data[email] = full_data
-
-        if filtred_data :
-            self.followPage(current_user,filtred_data)
+        result = self.friend.dfsSearch(current_user['email'], searching_by, current_user[searching_by])
+        if result :
+            self.followPage(current_user, result)
         else:
-            tkinter.messagebox.showinfo(title="Filter result" , message=f"No one share with you the same {filter_by}...because you're AWESOME!!!")
-            filtred_data = None
-            self.followPage(current_user, filtred_data) 
+            tkinter.messagebox.showinfo(title="Filter result" , message=f"No one share with you the same {searching_by}...because you're AWESOME!!!")
 
         ##################################################
         #                  FOllow function               #
@@ -501,18 +487,22 @@ def main():
     app = NewUser()
     # app .addUser()
     app.followPage({
-    "fullname": "aboudT",
+    "fullname": "aboud",
     "age": "13",
     "gender": "Male",
-    "email": "aboud2@gmail.com",
+    "email": "aboud1@gmail.com",
     "password": "Aboud123!",
     "nationality": "Afghanistan",
     "hobbies": None,
     "bio": None,
     "term_policie": "1",
-    "friend_count": 0,
-    "friend_list": { "1": "aboud1@gmail.com", "2": "aboud3@gmail.com" },
-    "isActive": False,
-    "fiend_count": 2
+    "friend_list": {
+      "1": "aboud2@gmail.com",
+      "2": "aboud3@gmail.com",
+      "3": "aboud4@gmail.com",
+      "4": "aboud5@gmail.com"
+    },
+    "isActive": None,
+    "friend_count": 4
   })
 main()

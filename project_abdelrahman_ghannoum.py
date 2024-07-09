@@ -1,5 +1,6 @@
 import json
-# from addNewUser import addUser
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class UserNode:
     
@@ -37,7 +38,6 @@ class FriendsList:
     
 #it's the same as addnode
     def addFriend(self,sourceUser, destinationUser):
-    
     #creation successfuly
         friend = UserNode(destinationUser)
         result = self.checkingFriend(friend)
@@ -81,7 +81,6 @@ class FriendsList:
             print(f"{friend} not found in the list.")
                 
 
-
     def displayFriends(self):
             friends = []
             current = self.head
@@ -114,7 +113,7 @@ class FriendsList:
         with open("userDB.json", 'r') as file:
             users_data = json.load(file)
         users_data[sourceUSer]['friend_list'] = result_following[0]
-        users_data[sourceUSer]['fiend_count'] = result_following[1]
+        users_data[sourceUSer]['friend_count'] = result_following[1]
         with open('userDB.json', 'w') as file:
             json.dump(users_data, file)
         
@@ -122,7 +121,7 @@ class FriendsList:
         friend = UserNode(destination)
         friend.next = self.head
         self.head = friend
-        print(f"{destination['fullname']} has been added successfuly")
+        print(f"{destination['fullname']} has been reload successfuly")
         self.size += 1
 ##################################################
 class FriendshipCommunity:
@@ -140,7 +139,7 @@ class FriendshipCommunity:
                     self.adj_list[user].reloadRelations(all_users[follower_data])
                 # else:
                     pass
-        self.displayFriendList()
+        # self.displayFriendList()
 
     #add new user to the adj_list
     def register(self, user):
@@ -200,3 +199,19 @@ class FriendshipCommunity:
         users_data[user_data['email']] = user_data
         with open('userDB.json', 'w') as file :
             json.dump(users_data, file)
+
+    def dfsSearch(self, start_node, searching_by, searching_value, visited=None, result = None):
+        if visited == None:
+            visited = set()
+        if result == None:
+            result = {}
+        visited.add(start_node)
+        if start_node in self.adj_list:
+            for neighbor_node in self.adj_list[start_node].displayFriends():
+                if neighbor_node[searching_by] == searching_value and neighbor_node['email'] not in visited  :
+                    
+            #return values as dictionary because in my follow page i'm working with dictionary only
+                    result[neighbor_node['email']] = neighbor_node
+                    self.dfsSearch(neighbor_node['email'], searching_by, searching_value, visited, result)
+        return result
+    
