@@ -18,21 +18,27 @@ class NewUser:
         self.password_input = ""
         self.term_var = False   
         self.isActive = False
+
     #fetching data for nationality list
         self.countries_data = [county["name"] for county in requests.get("https://freetestapi.com/api/v1/countries").json()]
+
     #variable declared for toggling password input value from "*" to actual value
         self.show_password_toggle = ""
+
     # i used dictionary to store data to O(1) be the TC when i will iterable through the entire dictionary in set fuction and others
         self.user_data = {}
         #parent component
         self.root = tkinter.Tk()
         self.add_user_frame = tkinter.Frame(self.root, padx=20, pady= 20)
+
     #for login page
         self.login_frame = tkinter.Frame(self.root, padx=20, pady= 20)
         self.email_login = ""
         self.password_login = ""
+
     #for profile page
         self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
+
     #create instance to use it in my all class
     # i create it here not in the setData function because when i want to add many vetex i want all these data store it in one instance which is this
     # not for each calling for new setData create new instance
@@ -50,7 +56,7 @@ class NewUser:
         self.add_user_frame = tkinter.Frame(self.root, padx=20, pady= 20)
         self.add_user_frame.configure(bg="#eeeeee")
         #to save my frame
-        self.add_user_frame.pack(padx=100, pady=100)
+        self.add_user_frame.grid(row=0 , column=0,padx=500, pady=170)
         
         ##################################################
         #           start by Personal info               #
@@ -253,10 +259,10 @@ class NewUser:
         ##################################################
 
     def loginPage(self):
-        self.login_frame = tkinter.Frame(self.root, padx=20, pady= 20)
+        self.login_frame = tkinter.Frame(self.root)
         self.login_frame.configure(bg="#eeeeee")
         #to save my frame
-        self.login_frame.pack(padx=100, pady=100)
+        self.login_frame.grid(row=0, column=0, padx=500, pady=400)
         # Email Label and Entry
         email_label = tkinter.Label(self.login_frame, text="Email:")
         email_label.grid(row=0,column=0)
@@ -304,8 +310,8 @@ class NewUser:
         ##################################################
 
     def profilePage(self, user):
-        self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
-        self.profile_page_frame.pack(padx=300, pady=100)
+        self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 100)
+        self.profile_page_frame.grid(row = 0, column= 0 , padx=500, pady=50)
         self.profile_page_frame.configure(bg="#eeeeee")
         row = 1
         header_label = ttk.Label(self.profile_page_frame, text=f"Welcome Back {user['fullname']}", font=("Abocat", 30, "bold"))
@@ -344,6 +350,19 @@ class NewUser:
         self.profile_page_frame.destroy()
         self.followPage(user)
 
+    def createHeader(self, current_user):
+        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
+        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
+
+        ##################################################
+        #              createFollowPageFrame             #
+        ##################################################
+
+    def createFollowPageFrame(self):
+    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
+        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
+        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
+        self.follow_page_frame.configure(bg="#eeeeee")
 
         ##################################################
         #                  follow Page                   #
@@ -359,8 +378,6 @@ class NewUser:
         #get all data from data base
             with open('userDB.json','r') as file:
                 users = json.load(file)
-
-        self.root.title("Friendship Community")
     #nested component in my window
         self.root.configure(bg="#ececec", width=880)
 
@@ -389,7 +406,14 @@ class NewUser:
         self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
     #to add the functionality
         self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, self.filter_input.get()))
-
+    #f there's return that's mean some field who try to filtered by are empty 
+        # if result : 
+        #     user_frame = tkinter.LabelFrame(self.root, bg="#f5f5f5", padx=50, pady=10, highlightbackground='red', highlightthickness=2)
+        #     user_frame.grid(row=1, column=1, padx=50, pady=50, sticky="w")
+        #     random_label = tkinter.Label(user_frame, text=result[1])
+        #     random_label.grid(row=1, column= 1 , padx= 50, pady= 50)
+        #     random_input = tkinter.Entry(user_frame)
+        #     random_input.grid(row=1, column= 2 )
         self.filter_input.set("Filter By")
         self.filter_input.grid(row= 0, column= 1)
 
@@ -430,28 +454,25 @@ class NewUser:
             user_frame.config(width=300, height=400 + (max_label_length * 2))
             
             col += 1
+        back_btn = tkinter.Button(second_frame, text="Back", bg="silver", fg="black", command=lambda : self.backToProfile(current_user))
+        back_btn.grid(row=5, column= 1, sticky='news', pady=20)
         my_canvas.update_idletasks() 
         my_canvas.create_window((0, 0), window=second_frame, anchor='nw')
         my_canvas.configure(scrollregion=my_canvas.bbox("all"))
         self.root.mainloop()
 
         ##################################################
+        #                  backToProfile                 #
+        ##################################################
+
+    def backToProfile(self, current_user):
+        self.follow_page_frame.destroy()
+        self.profilePage(current_user)
+
+        ##################################################
         #                  createHeader                  #
         ##################################################
 
-    def createHeader(self, current_user):
-        header_label = ttk.Label(self.root, text=f"Let's have some Friends {current_user['fullname']}", font=("Abocat", 30, "bold"))
-        header_label.grid(row=1, column=0, sticky="w", pady=50, padx=500)
-
-        ##################################################
-        #              createFollowPageFrame             #
-        ##################################################
-
-    def createFollowPageFrame(self):
-    #user is the data for user which i log in by so i won't see in my users list because i can't follow it
-        self.follow_page_frame = tkinter.Frame(self.root, padx=250, pady= 0, width=800)
-        self.follow_page_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
-        self.follow_page_frame.configure(bg="#eeeeee")
 
         ##################################################
         #                  handleFilter                  #
@@ -460,8 +481,10 @@ class NewUser:
     def handleFilter(self, current_user, searching_by):
         if searching_by == 'reset':
             self.followPage(current_user, self.user_data)
+        
+        #that's mean values for current_user with this seaching_by == None or empty so we cann't filter bysomething i did'nt even have it
         if not current_user[searching_by]:
-           return tkinter.messagebox.showinfo(title="Filter result" , message=f"You didn't even have {searching_by} data")
+           return tkinter.messagebox.showwarning(title="Filter result" , message=f"You didn't even have {searching_by} data")
 
         result = self.friend.dfsSearch(current_user['email'], searching_by, current_user[searching_by])
         if result :
@@ -485,24 +508,22 @@ class NewUser:
 
 def main():
     app = NewUser()
-    # app .addUser()
-    app.followPage({
-    "fullname": "aboud",
-    "age": "13",
-    "gender": "Male",
-    "email": "aboud1@gmail.com",
-    "password": "Aboud123!",
-    "nationality": "Afghanistan",
-    "hobbies": None,
-    "bio": None,
-    "term_policie": "1",
-    "friend_list": {
-      "1": "aboud2@gmail.com",
-      "2": "aboud3@gmail.com",
-      "3": "aboud4@gmail.com",
-      "4": "aboud5@gmail.com"
-    },
-    "isActive": None,
-    "friend_count": 4
-  })
+    app .addUser()
+#     app.followPage({
+#     "fullname": "aboud",
+#     "age": "13",
+#     "gender": "Male",
+#     "email": "aboud1@gmail.com",
+#     "password": "Aboud123!",
+#     "nationality": "Afghanistan",
+#     "hobbies": None,
+#     "bio": None,
+#     "term_policie": "1",
+#     "friend_list": {
+#       "1": "aboud2@gmail.com",
+#       "2": "aboud3@gmail.com"
+#     },
+#     "isActive": False,
+#     "friend_count": 4
+#   })
 main()
