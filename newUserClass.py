@@ -17,12 +17,7 @@ class NewUser:
         self.email_input = ""
         self.password_input = ""
         self.term_var = False   
-        self.following = 0
-        self.followers = 0
         self.isActive = False
-    #initial following_list and followers_list by dictionary to avoid duplicate
-        self.following_list = {}
-        self.followers_list = {}
     #fetching data for nationality list
         self.countries_data = [county["name"] for county in requests.get("https://freetestapi.com/api/v1/countries").json()]
     #variable declared for toggling password input value from "*" to actual value
@@ -67,9 +62,9 @@ class NewUser:
 
     #create full_name label , inputs and render it
         full_name_label = tkinter.Label(personal_info_frame, text="Full name")
-        self.full_name_input = tkinter.Entry(personal_info_frame)
+        self.fullname_input = tkinter.Entry(personal_info_frame)
         full_name_label.grid(row = 0, column = 0)
-        self.full_name_input.grid(row = 1, column= 0)
+        self.fullname_input.grid(row = 1, column= 0)
     #create hobbies_label , inputs and render it
         hobbies_label = tkinter.Label(personal_info_frame, text="Hobies")
         self.hobbies_input= tkinter.Entry(personal_info_frame)
@@ -154,7 +149,7 @@ class NewUser:
         ##################################################
 
     def handleForm(self):
-        fullname = self.full_name_input.get()
+        fullname = self.fullname_input.get()
         age = self.age_spinbox.get()
         gender = self.gender_combobox.get()
         email = self.email_input.get()
@@ -188,14 +183,12 @@ class NewUser:
                 "email" : email,
                 "password" : password,
                 "nationality" : nationality,
-                "hobbies" : hobbies,
-                "bio" : bio,
+                "hobbies" : hobbies or None,
+                "bio" : bio or None,
                 "term_policie":acceptedTerms,
-                "following" : 0,
-                "followers" : 0,
+                "friend_count" : 0,
+                "friend_list" : {},
                 "isActive" : False,
-                "following_list" : {},
-                "followers_list" : {},
                 }
                 self.setUserData(data)
                 self.clearForm()
@@ -220,7 +213,7 @@ class NewUser:
         ##################################################
 
     def clearForm(self):
-        self.full_name_input.delete(0 , "end")
+        self.fullname_input.delete(0 , "end")
         self.hobbies_input.delete(0, "end")
         self.bio_input.delete(0, "end")
         self.age_spinbox.delete(0, 'end')
@@ -247,9 +240,6 @@ class NewUser:
 
     def exitProgram(self):
             self.root.destroy()
-
-
-    
 
         ##################################################
         #                 switch to login                #
@@ -500,6 +490,7 @@ class NewUser:
     def trigger_follow(self, current_user_email, user_to_follow_email):
         
         result = self.friend.follow(current_user_email, user_to_follow_email)
+        
         tkinter.messagebox.showinfo(title="Follow Result", message=result)
         self.friend.displayFriendList()
 
@@ -508,37 +499,20 @@ class NewUser:
 
 def main():
     app = NewUser()
-    app.addUser()
-#     app.followPage({
-#     "fullname": "samir",
-#     "age": "20",
-#     "gender": "Male",
-#     "email": "samir1@gmail.com",
-#     "password": "Samir123!",
-#     "nationality": "Andorra",
-#     "hobbies": "swiming",
-#     "bio": "",
-#     "term_policie": "1",
-#     "following": 0,
-#     "followers": 0,
-#     "isActive": False,
-#     "following_list": {},
-#     "followers_list": {}
-#   })
-#     # app.followPage({
-    #     "fullname": "aboud",
-    #     "age": "13",
-    #     "gender": "Male",
-    #     "email": "aboud1@gmail.com",
-    #     "password": "Aboud123!",
-    #     "nationality": "Algeria",
-    #     "hobbies": "swiming",
-    #     "bio": "welcome to my account",
-    #     "term_policie": "1",
-    #     "followers": 0,
-    #     "following": 0,
-    #     "isActive": 0,
-    #     "followers_list": {},
-    #     "following_list": {}
-    # },None)
+    # app .addUser()
+    app.followPage({
+    "fullname": "aboudT",
+    "age": "13",
+    "gender": "Male",
+    "email": "aboud2@gmail.com",
+    "password": "Aboud123!",
+    "nationality": "Afghanistan",
+    "hobbies": None,
+    "bio": None,
+    "term_policie": "1",
+    "friend_count": 0,
+    "friend_list": { "1": "aboud1@gmail.com", "2": "aboud3@gmail.com" },
+    "isActive": False,
+    "fiend_count": 2
+  })
 main()

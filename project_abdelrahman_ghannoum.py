@@ -12,22 +12,13 @@ class UserNode:
         self.hobbies= friendsData["hobbies"]
         self.bio = friendsData["bio"]
         self.email = friendsData["email"]
-        self.following_list = friendsData["following_list"]
-        self.followers_list = friendsData["followers_list"]
-        self.following = len(self.following_list)
-        self.followers = len(self.followers_list) 
+        self.friend_list = friendsData["friend_list"]
+        self.friend_count = friendsData['friend_count']
         self.isActive = friendsData["isActive"]
         self.block = 0
         self.isAdmin = False
         self.next = None
         pass
-
-    def addFollowers(self, sourceUser):
-    #add to (dictionary) followers list source by key is the email of source and values sourceUser
-    #self refere to destination
-        self.followers_list[self.followers + 1] = sourceUser['email']
-        self.followers += 1
-        return [self.followers_list, self.followers]
     
 #It's our linked list for the friends of vertesis
 class FriendsList:
@@ -50,26 +41,22 @@ class FriendsList:
     #creation successfuly
         friend = UserNode(destinationUser)
         result = self.checkingFriend(friend)
+        
         if not result:
-
-        #add friend to the its own destinationuser_list and increament followers by 1
-            result_followers = friend.addFollowers(sourceUser)
-
-            result_following = self.addFollowing(sourceUser, destinationUser)
+        #add to friend list
+            result = self.addToFriendList(sourceUser, destinationUser)
             #add node to linked list 
             friend.next = self.head
             self.head = friend
             print(f"{destinationUser['fullname']} has been added successfuly")
             self.size += 1
-        #add friend to following_list for the source and increment following by 1
-            # self.loadData(sourceUser['email'], destinationUser['email'], result_following, result_followers)
+
+
+        #add friend to friend_list for the source and increment following by 1
+            self.loadData(sourceUser['email'], result)
         else :
            return True
-        
-    def addFollowing(self, sourceUser, destinationUser):
-        sourceUser['following_list'] = {sourceUser['following']+ 1 : destinationUser['email']}
-        sourceUser['following'] += 1
-        return [sourceUser['following_list'],sourceUser['following']]
+    
         
 #it's the same as removeNode
     def removeFriend(self, friend):
@@ -93,8 +80,6 @@ class FriendsList:
                 current = current.next
             print(f"{friend} not found in the list.")
                 
-    def getSize(self):
-        print(f"Your have {self.followers} followers")
 
 
     def displayFriends(self):
@@ -110,32 +95,35 @@ class FriendsList:
                     "nationality" : current.nationality,
                     "hobbies" : current.hobbies,
                     "bio" : current.bio,
-                    "following": current.following,
-                    "followers": current.followers,
+                    "friend_count": current.friend_count,
                     "isActive": current.isActive,
-                    "following_list": current.following_list,
-                    "followers_list": current.followers_list
+                    "friend_list": current.friend_list,
                 }
                 friends.append(friend_data)
                 current = current.next
             return friends
+    
+    def addToFriendList(self,sourceUser, destination):
+    #add to (dictionary) followers list the source by key is the email of source and values sourceUser
+    #self refere to destination
+        sourceUser["friend_list"][len(sourceUser["friend_list"]) + 1] = destination['email']
+        sourceUser["friend_count"] = len(sourceUser["friend_list"])
+        return [sourceUser["friend_list"], sourceUser["friend_count"]]
 
-    def loadData(self, sourceUSer, destinationUser,  result_following, result_followers):
+    def loadData(self, sourceUSer,  result_following):
         with open("userDB.json", 'r') as file:
             users_data = json.load(file)
-        users_data[sourceUSer]['following_list'] = result_following[0]
-        users_data[sourceUSer]['following'] = result_following[1]
-        users_data[destinationUser]['followers_list'] = result_followers[0]
-        users_data[destinationUser]['followers'] = result_followers[1]
+        users_data[sourceUSer]['friend_list'] = result_following[0]
+        users_data[sourceUSer]['fiend_count'] = result_following[1]
         with open('userDB.json', 'w') as file:
             json.dump(users_data, file)
         
-    # def reloadRealations(self, destination):
-    #     friend = UserNode(destination)
-    #     friend.next = self.head
-    #     self.head = friend
-    #     print(f"{destination['fullname']} has been added successfuly")
-    #     self.size += 1
+    def reloadRelations(self, destination):
+        friend = UserNode(destination)
+        friend.next = self.head
+        self.head = friend
+        print(f"{destination['fullname']} has been added successfuly")
+        self.size += 1
 ##################################################
 class FriendshipCommunity:
     def __init__(self) -> None:
@@ -147,11 +135,11 @@ class FriendshipCommunity:
             all_users = json.load(file)
         for user in all_users:
             self.adj_list[user] = FriendsList()
-        #     if all_users[user] ['followers_list']:
-        #         for follower_key, follower_data in all_users[user]['following_list'].items():
-        #             self.adj_list[user].addFriend(self.adj_list[user], all_users[follower_data])
-        #         # else:
-        #             pass
+            if all_users[user]['friend_list']:
+                for follower_key, follower_data in all_users[user]['friend_list'].items():
+                    self.adj_list[user].reloadRelations(all_users[follower_data])
+                # else:
+                    pass
         self.displayFriendList()
 
     #add new user to the adj_list
