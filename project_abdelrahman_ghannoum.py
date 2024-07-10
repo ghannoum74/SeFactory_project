@@ -59,25 +59,40 @@ class FriendsList:
     
         
 #it's the same as removeNode
-    def removeFriend(self, friend):
+    def removeFriend(self,sourceUser , friend_email):
         if self.size== 0:
             print("You're Lonely . You don't even have a friends to remove it :(")
             return
-        elif self.head.email == friend:
+        elif self.head.email == friend_email:
             print(f"{self.head.fullname} removed")
             self.head = self.head.next
             self.size-= 1
+            with open('userDB.json', 'r') as file :
+                users_data = json.load(file)
+            del users_data[sourceUser['email']]['friend_list'][friend_email]
+            with open('userDB.json', 'w') as file :
+                json.dump(users_data, file)
+            print(users_data[sourceUser['email']]['friend_list'], "----------------------------------")
+            # users_data[sourceUser]['friend_list'].remove(friend_email)
+            return True
         else :
             current = self.head.next
             previous = self.head
             while current :
-                if current.email == friend:
+                if current.email == friend_email:
                     previous.next = current.next
                     self.size-= 1
                     print(f"{current.fullname} removed")
-                    return 
+                    with open('userDB.json', 'r') as file :
+                        users_data = json.load(file)
+                    del users_data[sourceUser['email']]['friend_list'][friend_email]
+                    with open('userDB.json', 'w') as file :
+                        json.dump(users_data, file)
+                    
+                    return True
                 previous = current 
                 current = current.next
+            return False
             print(f"{friend} not found in the list.")
                 
 
@@ -105,7 +120,7 @@ class FriendsList:
     def addToFriendList(self,sourceUser, destination):
     #add to (dictionary) followers list the source by key is the email of source and values sourceUser
     #self refere to destination
-        sourceUser["friend_list"][len(sourceUser["friend_list"]) + 1] = destination['email']
+        sourceUser["friend_list"][destination['email']] = destination['email']
         sourceUser["friend_count"] = len(sourceUser["friend_list"])
         return [sourceUser["friend_list"], sourceUser["friend_count"]]
 
@@ -139,7 +154,7 @@ class FriendshipCommunity:
                     self.adj_list[user].reloadRelations(all_users[follower_data])
                 # else:
                     pass
-        # self.displayFriendList()
+        self.displayFriendList()
 
     #add new user to the adj_list
     def register(self, user):
@@ -179,6 +194,9 @@ class FriendshipCommunity:
         elif destinationUser['email'] not in self.adj_list:
             return("Invalid",destinationUser['email'])
 
+    def unfollow(self, sourceUser, destinationUser):
+        result = self.adj_list[sourceUser['email']].removeFriend(sourceUser, destinationUser)
+        self.displayFriendList()
     def login(self, email, password):
         with open('userDB.json', 'r') as file:
             users = json.load(file)
