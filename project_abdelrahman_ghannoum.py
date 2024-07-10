@@ -14,7 +14,7 @@ class UserNode:
         self.bio = friendsData["bio"]
         self.email = friendsData["email"]
         self.friend_list = friendsData["friend_list"]
-        self.friend_count = friendsData['friend_count']
+        self.friend_count = len(self.friend_list)
         self.isActive = friendsData["isActive"]
         self.block = 0
         self.isAdmin = False
@@ -62,7 +62,7 @@ class FriendsList:
     def removeFriend(self,sourceUser , friend_email):
         if self.size== 0:
             print("You're Lonely . You don't even have a friends to remove it :(")
-            return
+            return False
         elif self.head.email == friend_email:
             print(f"{self.head.fullname} removed")
             self.head = self.head.next
@@ -70,11 +70,11 @@ class FriendsList:
             with open('userDB.json', 'r') as file :
                 users_data = json.load(file)
             del users_data[sourceUser['email']]['friend_list'][friend_email]
+            users_data[sourceUser['email']]['friend_count'] -= 1
             with open('userDB.json', 'w') as file :
                 json.dump(users_data, file)
-            print(users_data[sourceUser['email']]['friend_list'], "----------------------------------")
             # users_data[sourceUser]['friend_list'].remove(friend_email)
-            return True
+            return users_data[sourceUser['email']]
         else :
             current = self.head.next
             previous = self.head
@@ -86,10 +86,11 @@ class FriendsList:
                     with open('userDB.json', 'r') as file :
                         users_data = json.load(file)
                     del users_data[sourceUser['email']]['friend_list'][friend_email]
+                    users_data[sourceUser['email']]['friend_count'] -= 1
                     with open('userDB.json', 'w') as file :
                         json.dump(users_data, file)
                     
-                    return True
+                    return users_data[sourceUser['email']]
                 previous = current 
                 current = current.next
             return False
@@ -196,7 +197,10 @@ class FriendshipCommunity:
 
     def unfollow(self, sourceUser, destinationUser):
         result = self.adj_list[sourceUser['email']].removeFriend(sourceUser, destinationUser)
+        if result:
+            return result
         self.displayFriendList()
+
     def login(self, email, password):
         with open('userDB.json', 'r') as file:
             users = json.load(file)

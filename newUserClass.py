@@ -37,7 +37,7 @@ class NewUser:
         self.password_login = ""
 
     #for profile page
-        self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
+        # self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 20)
 
     #create instance to use it in my all class
     # i create it here not in the setData function because when i want to add many vetex i want all these data store it in one instance which is this
@@ -310,57 +310,59 @@ class NewUser:
         ##################################################
 
     def profilePage(self, current_user):
-        self.profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 100)
-        self.profile_page_frame.grid(row = 0, column= 0 , padx=500, pady=50)
-        self.profile_page_frame.configure(bg="#eeeeee")
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        profile_page_frame = tkinter.Frame(self.root, padx=20, pady= 100)
+        profile_page_frame.grid(row = 0, column= 0 , padx=500, pady=50)
+        profile_page_frame.configure(bg="#eeeeee")
         row = 1
-        header_label = ttk.Label(self.profile_page_frame, text=f"Welcome Back {current_user['fullname']}", font=("Abocat", 30, "bold"))
+        header_label = ttk.Label(profile_page_frame, text=f"Welcome Back {current_user['fullname']}", font=("Abocat", 30, "bold"))
         header_label.grid(row=0, column=0, sticky="w", pady=5)
         for key, value in current_user.items():
 
             # Create label for key
-            if key == 'term_policy' :
+            if key == 'term_policy' or key == 'friend_list':
                 continue
-            key_label = ttk.Label(self.profile_page_frame, text=f"{key.capitalize()}: ", font=("Arial", 12, "bold"))
+            key_label = ttk.Label(profile_page_frame, text=f"{key.capitalize()}: ", font=("Arial", 12, "bold"))
             key_label.grid(row=row, column=0, sticky="w", pady=5)
 
             # Create label for value
-            value_label = ttk.Label(self.profile_page_frame, text=f"{value}", font=("Arial", 12), wraplength=200, justify="left")
+            value_label = ttk.Label(profile_page_frame, text=f"{value}", font=("Arial", 12), wraplength=200, justify="left")
             value_label.grid(row=row, column=1, sticky="w", pady=5)
             row +=1
         
-        # #for the friend list
-        #     key_label = ttk.Label(self.profile_page_frame, text=f"{"friend_list".capitalize()}: ", font=("Arial", 12, "bold"))
-        #     key_label.grid(row=11, column=0, sticky="w", pady=5)
+        #add list friend manually to avoid overflow
+            key_label = ttk.Label(profile_page_frame, text=f"{"friend_list".capitalize()}: ", font=("Arial", 12, "bold"))
+            key_label.grid(row=11, column=0, sticky="w", pady=5)
 
-        #     value_label = ttk.Label(self.profile_page_frame, text=current_user['friend_list'], font=("Arial", 12))
-        #     value_label.grid(row=11, column=1, sticky="w", pady=5)
+            value_label = ttk.Label(profile_page_frame, text=f"{list(current_user['friend_list'])[0] if current_user['friend_list'] else "No friends..."}", font=("Arial", 12))
+            value_label.grid(row=11, column=1, sticky="w", pady=5)
             
         #so only if there are more than one friend
         # i used get because ['2'] give me an error 
             if current_user['friend_count'] > 0:
 
         #see more from the list 
-                anchor = tkinter.Label(self.profile_page_frame, text="See more...", font=("Arial", 12), fg="blue", cursor="hand2")
+                anchor = tkinter.Label(profile_page_frame, text="See more...", font=("Arial", 12), fg="blue", cursor="hand2")
                 anchor.grid(row=12, column=1, sticky="w", pady=5)
             
         #add functionality for see more
-                anchor.bind("<Button-1>", lambda e: self.swich_to_friendList_user( current_user))
+                anchor.bind("<Button-1>", lambda e: self.swich_to_friendList_user( current_user, profile_page_frame))
 
             
 
         #lambda is like ()=> ananymus function in js so now i can pass parameter for the follow page
-        Follow_btn = tkinter.Button(self.profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=lambda : self.handleFollow(current_user) , cursor="hand2")
+        Follow_btn = tkinter.Button(profile_page_frame, text="Let's find some Friends" ,bg="grey",fg="white", command=lambda : self.handleFollow(current_user, profile_page_frame) , cursor="hand2")
         Follow_btn.grid(row=row + 3, column=0, padx=10, pady=5, sticky="ew")
-        logout_btn = tkinter.Button(self.profile_page_frame, text="Log out"  ,bg="red",fg="white", command=lambda :self.handleLogout(current_user), cursor="hand2")
+        logout_btn = tkinter.Button(profile_page_frame, text="Log out"  ,bg="red",fg="white", command=lambda :self.handleLogout(current_user, profile_page_frame), cursor="hand2")
         logout_btn.grid(row=row + 2, column=0, padx=10, pady=5, sticky="ew",)
         
         ##################################################
         #             switch to friend list              #
         ##################################################
                  
-    def swich_to_friendList_user(self, current_user):
-            self.profile_page_frame.destroy()
+    def swich_to_friendList_user(self, current_user, parent_frame):
+            parent_frame.destroy()
             self.seeMoreFriend( current_user)
     
         ##################################################
@@ -368,18 +370,22 @@ class NewUser:
         ##################################################
         
     def seeMoreFriend(self, current_user):
+    #this code because i face an conflict when i destroy frames and switch between pages
+    #so it check when i render this component that all frames are destoyed normaly
+        for widget in self.root.winfo_children():
+            widget.destroy()
         #fetching data 
         with open('userDB.json', 'r') as file :
             users_data = json.load(file)
         
         friends_frame = tkinter.Frame(self.root)
-        friends_frame.grid(row=0, column=0)
+        friends_frame.grid(row=0, column=0, padx=220)
 
         #create header
         # header_label = ttk.Label(friends_frame, text=f"This you friends list {current_user['fullname']}", font=("Abocat", 30, "bold"))
         # header_label.grid(row=0, column=1, sticky="w", pady=50, padx= 150)
 
-        friend_labelframe = tkinter.LabelFrame(friends_frame, bg="#f5f5f5", text=f"{current_user['fullname'].capitalize()}'s friend list",)
+        friend_labelframe = tkinter.LabelFrame(friends_frame, bg="#f5f5f5", text=f"{current_user['fullname'].capitalize()}'s friend list")
         friend_labelframe.grid_propagate(False)
         friend_labelframe.grid(row=1, column=1, sticky="w")
 
@@ -392,7 +398,7 @@ class NewUser:
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        scrollable_frame = tkinter.Frame(canvas, bg="#f5f5f5")
+        scrollable_frame = tkinter.Frame(canvas, bg="#f5f5f5", pady=30)
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
 
@@ -424,30 +430,55 @@ class NewUser:
                 inner_row += 1
 
             # Create the unfollow button at the bottom of each LabelFrame
-            unfollow_btn = tkinter.Button(friend_label_frame, text="Unfollow", bg="red", fg="white",command=lambda destinationUser = users_data[friend_value]: self.friend.unfollow(current_user, destinationUser['email']), cursor="hand2")
+            unfollow_btn = tkinter.Button(friend_label_frame, text="Unfollow", bg="red", fg="white",command=lambda destinationUser = users_data[friend_value]: self.triggerUnfollow(current_user, destinationUser['email']), cursor="hand2")
             unfollow_btn.grid(row=inner_row, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
 
-            # Place the LabelFrame inside the scrollable_frame
             friend_label_frame.grid(row=row, column=col, sticky="w", pady=10, padx=10)
 
-            scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
             col += 1
+
+        #create back btn
+        refresh_btn = tkinter.Button(scrollable_frame, text="Back", bg='blue', fg="white", pady=0, command= lambda  : self.switchBackToProfilePage(current_user, friends_frame), cursor="hand2")
+        refresh_btn.grid(row=row + 2, column=0, columnspan=2, pady=20, padx=10, sticky="ew")
+
+        scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        
+        ##################################################
+        #                  trigger unfollow              #
+        ##################################################
+
+    def triggerUnfollow (self, current_user, destinationUser_email):
+        result = self.friend.unfollow(current_user, destinationUser_email)
+        if result:
+            tkinter.messagebox.showinfo(title="unfollow result", message=f"you dumped {destinationUser_email} good for you ;)")
+        #re render the component with the new data
+            self.seeMoreFriend(result)
+        else :
+            tkinter.messagebox.showinfo(title="unfollow result", message=f"You're Lonely . You don't even have a friends to remove it :(")
+            
+        ##################################################
+        #                  handleBackfct                 #
+        ##################################################
+
+    def switchBackToProfilePage(self, current_user, parent_frame):
+        parent_frame.destroy()
+        self.profilePage(current_user)
 
         ##################################################
         #                  handle logout                 #
         ##################################################
         
-    def handleLogout(self, current_user):
+    def handleLogout(self, current_user, parent_frame):
         current_user['isActive'] = False
-        self.profile_page_frame.destroy()
+        parent_frame.destroy()
         self.addUser()
 
         ##################################################
         #                  handle FollowPage              #
         ##################################################
         
-    def handleFollow(self, user):
-        self.profile_page_frame.destroy()
+    def handleFollow(self, user, parent_frame):
+        parent_frame.destroy()
         self.followPage(user)
 
     def createHeader(self, current_user):
@@ -527,9 +558,11 @@ class NewUser:
             max_label_length = 0
             
             for user_key, user_value in user_data.items():
+
     #skip these data because it not make since to display password
                 if user_key in ['term_policy', 'password', 'email']:
                     continue
+
     #stop display other data 
                 if user_data['isActive'] == True:
                     break
@@ -608,8 +641,15 @@ def main():
     "hobbies": None,
     "bio": None,
     "term_policy": "1",
-    "friend_list": { "salem1@gmail.com": "salem1@gmail.com", "aboud1@gmail.com": "aboud1@gmail.com"},
+    "friend_list": {
+      "aboud4@gmail.com": "aboud4@gmail.com",
+      "aboud5@gmail.com": "aboud5@gmail.com",
+      "aboud2@gmail.com": "aboud2@gmail.com",
+      "aboud3@gmail.com": "aboud3@gmail.com",
+      "aboud6@gmail.com": "aboud6@gmail.com",
+      "aboud7@gmail.com": "aboud7@gmail.com",
+    },
     "isActive": False,
-    "friend_count": 2
+    "friend_count": 6
   })
 main()
