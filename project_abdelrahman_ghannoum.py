@@ -146,17 +146,20 @@ class FriendshipCommunity:
     #initial self.adj_list by all the users in the DB
     #so when i exit this program and comeback i will not use these data
     #Note : i can hide this and start programe from biggining and add two users and only with this two i can add friend
-        with open("userDB.json", "r") as file:
-            all_users = json.load(file)
-        for user in all_users:
-            self.adj_list[user] = FriendsList()
-            if all_users[user]['friend_list']:
-                for follower_key, follower_data in all_users[user]['friend_list'].items():
-                    self.adj_list[user].reloadRelations(all_users[follower_data])
-                # else:
-                    pass
-        self.displayFriendList()
+        try:
+            with open("userDB.json", "r") as file:
+                all_users = json.load(file)
+        except:
+            print("there is no data in the data base to load it")
 
+    #that's mean there is data in the DB
+        if all_users:
+            for user in all_users:
+                self.adj_list[user] = FriendsList()
+                if all_users[user]['friend_list']:
+                    for follower_key, follower_data in all_users[user]['friend_list'].items():
+                        self.adj_list[user].reloadRelations(all_users[follower_data])
+            self.displayFriendList()
     #add new user to the adj_list
     def register(self, user):
     #i used this algorith in the setUserData in

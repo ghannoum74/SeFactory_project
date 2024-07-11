@@ -44,6 +44,10 @@ class NewUser:
     # not for each calling for new setData create new instance
     # this how i can check if vertex added is already exist or not 
         self.friend = FriendshipCommunity()
+
+    def loadUser(self):
+        with open('userDB.json', 'r')as file:
+            return json.load(file)
         ##################################################
         #                 create new user                #
         ##################################################
@@ -193,8 +197,8 @@ class NewUser:
                 "bio" : bio or None,
                 "term_policy":acceptedTerms,
                 "friend_count" : 0,
-                "friend_list" : {},
                 "isActive" : False,
+                "friend_list" : {},
                 }
                 self.setUserData(data)
                 self.clearForm()
@@ -369,14 +373,16 @@ class NewUser:
         #             handle see more friend             #
         ##################################################
         
-    def seeMoreFriend(self, current_user):
+    def seeMoreFriend(self, current_user, filtred_data = None):
     #this code because i face an conflict when i destroy frames and switch between pages
     #so it check when i render this component that all frames are destoyed normaly
         for widget in self.root.winfo_children():
             widget.destroy()
+        if filtred_data:
+            users_data = filtred_data
+        else:
         #fetching data 
-        with open('userDB.json', 'r') as file :
-            users_data = json.load(file)
+            users_data = self.loadUser()
         
         friends_frame = tkinter.Frame(self.root)
         friends_frame.grid(row=0, column=0, padx=220)
@@ -401,11 +407,26 @@ class NewUser:
         scrollable_frame = tkinter.Frame(canvas, bg="#f5f5f5", pady=30)
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
+        #create like filter to filter by some data
+        filter_value = ['hobbies', 'fullname', 'nationality', 'reset']
+        self.filter_input = ttk.Combobox(friends_frame, values =filter_value)
+    #to add the functionality
+        self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, self.filter_input.get()))
+
+        self.filter_input.set("Filter By")
+        self.filter_input.grid(row= 0, column= 1)
 
         row = 0
         col = 0
 
         for friend_key, friend_value in current_user['friend_list'].items():
+
+        #skip the data which are not in users_data to filtered
+        #i cannot itereable over the filtred data directly because it's firstly None
+        #so firstly this function render the whole friend_list data 
+        #when we filtred it will re render the whole data without this it not in the new filtred data
+            if friend_key not in users_data:
+                continue
             if col % 2 == 0:
                 row += 1
                 col = 0
@@ -443,6 +464,24 @@ class NewUser:
 
         scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         
+        ##################################################
+        #                  handleFilter                  #
+        ##################################################
+
+    def handleFilter(self, current_user, searching_by):
+        if searching_by == 'reset':
+            self.seeMoreFriend(current_user)
+            return
+        
+        #that's mean values for current_user with this seaching_by == None or empty so we cann't filter by something i did'nt even have it
+        if not current_user[searching_by]:
+           return tkinter.messagebox.showwarning(title="Filter result" , message=f"You didn't even have {searching_by} data")
+        result = self.friend.dfsSearch(current_user['email'], searching_by, current_user[searching_by])
+        if result :
+            self.seeMoreFriend(current_user, result)
+        else:
+            tkinter.messagebox.showinfo(title="Filter result" , message=f"No one share with you the same {searching_by}...because you're AWESOME!!!")
+
         ##################################################
         #                  trigger unfollow              #
         ##################################################
@@ -507,8 +546,7 @@ class NewUser:
         else :
         #then the user enter reset or dont find a similiarity
         #get all data from data base
-            with open('userDB.json','r') as file:
-                users = json.load(file)
+            users = self.loadUser()
     #nested component in my window
         self.root.configure(bg="#ececec", width=880)
 
@@ -532,30 +570,34 @@ class NewUser:
         second_frame = tkinter.Frame(my_canvas)
         my_canvas.create_window((0 , 0), window = second_frame, anchor = 'nw')
 
-    #create like filter to filter by some data
-        filter_value = ['hobbies', 'fullname', 'nationality', 'reset']
-        self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
-    #to add the functionality
-        self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, self.filter_input.get()))
+    # #create like filter to filter by some data
+    #     filter_value = ['hobbies', 'fullname', 'nationality', 'reset']
+    #     self.filter_input = ttk.Combobox(self.follow_page_frame, values =filter_value)
+    # #to add the functionality
+    #     self.filter_input.bind("<<ComboboxSelected>>",lambda e: self.handleFilter(current_user, self.filter_input.get()))
 
-        self.filter_input.set("Filter By")
-        self.filter_input.grid(row= 0, column= 1)
+    #     self.filter_input.set("Filter By")
+    #     self.filter_input.grid(row= 0, column= 1)
 
         row, col = 0, 0
         max_cols = 3 
         
         for email, user_data in users.items():
+        #skip if user already friend with me so i don't want to follow him 
+        #skip own user so you can't follow yourself
+            if email in current_user['friend_list'] or email == current_user['email']:
+                continue
+
             if col % max_cols == 0:
                 row += 1
                 col = 0
             
-            if email == current_user['email']:
-                continue
-            
             user_frame = tkinter.LabelFrame(second_frame, bg="#f5f5f5", text=email, padx=50, pady=10, highlightbackground='red', highlightthickness=2)
             user_frame.grid(row=row, column=col, padx=10, pady=10, sticky="w")
-            
+
+        #these are for display data
             max_label_length = 0
+            label_count = 0
             
             for user_key, user_value in user_data.items():
 
@@ -566,18 +608,34 @@ class NewUser:
     #stop display other data 
                 if user_data['isActive'] == True:
                     break
+
+                if user_key == 'friend_list' and len(user_value) > 2:
+                    label = tkinter.Label(user_frame, text=f"{user_key}: {list(user_value)[:2]}", font=("Arial", 12), bg="#f5f5f5", wraplength=200, justify="left")
+                    label.grid(sticky="w", pady=5)
+                #display friendlist manually by see more anchor
+                    anchor = tkinter.Label(user_frame, text="See more...", font=("Arial", 12), fg="blue", cursor="hand2")
+                    anchor.grid(row=12, column=0, sticky="w", pady=5)
+                    label_count += 1
+
+                    #add functionality for see more
+                    anchor.bind("<Button-1>", lambda e, user_value=user_value: self.swich_to_friendList_for_friend(self.follow_page_frame, user_value, current_user))
+                    label_count += 1
+                    continue
                 label = tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5", wraplength=200, justify="left")
                 label.grid(sticky="w", pady=5)
+                label_count += 1
                 
                 label_length = len(f"{user_key}: {user_value}")
                 if label_length > max_label_length:
                     max_label_length = label_length
-            
+
+
             follow_btn = tkinter.Button(user_frame, text="Follow", bg="blue", fg="white", command=lambda user = user_data: self.trigger_follow(current_user, user), cursor="hand2")
             follow_btn.grid(padx=10, pady=5, sticky="ew")
             
+            frame_height = 300 + (label_count * 20)
             user_frame.grid_propagate(False)
-            user_frame.config(width=300, height=400 + (max_label_length * 2))
+            user_frame.config(width=300, height=frame_height)
             
             col += 1
         back_btn = tkinter.Button(second_frame, text="Back", bg="silver", fg="black", command=lambda : self.backToProfile(current_user), cursor="hand2")
@@ -587,6 +645,117 @@ class NewUser:
         my_canvas.configure(scrollregion=my_canvas.bbox("all"))
         self.root.mainloop()
 
+        ##################################################
+        #                 display friends                #
+        ##################################################
+
+#add parent_frame to be used many time 
+    def swich_to_friendList_for_friend(self,parent_frame ,rest_friends, current_user):
+        parent_frame.destroy()
+        self.displayFullFriendsPage(rest_friends, current_user)
+        ##################################################
+        #          displayFullFriendsPage                #
+        ##################################################       
+
+    def displayFullFriendsPage(self, rest_friends, current_user):
+        users_data = self.loadUser()
+
+        # Get whole data for the user 
+        rest_friends_all_data = {}
+        for key, value in users_data.items():
+            if key in rest_friends:
+                rest_friends_all_data[key] = value
+
+        self.full_friend_frame = tkinter.Frame(self.root, padx=250, pady=0, width=800)
+        self.full_friend_frame.grid(row=3, column=0, sticky="w", pady=5, padx=5, ipadx=5, ipady=5)
+        self.full_friend_frame.configure(bg="#eeeeee")
+
+        my_canvas = tkinter.Canvas(self.full_friend_frame, width=1200, height=600)
+        my_canvas.grid(row=4, column=0, sticky="nsew", columnspan=2)
+
+        # Add scroll bar
+        my_scrollbar = tkinter.Scrollbar(self.full_friend_frame, orient="vertical", command=my_canvas.yview)
+        my_scrollbar.grid(row=4, column=2, sticky="ns")
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+
+        second_frame = tkinter.Frame(my_canvas)
+        second_frame_id = my_canvas.create_window((0, 0), window=second_frame, anchor='nw')
+
+        # Configure canvas scroll region when second_frame changes
+        def on_configure(event):
+            my_canvas.configure(scrollregion=my_canvas.bbox("all"))
+
+        second_frame.bind("<Configure>", on_configure)
+
+        row, col = 0, 0
+        max_cols = 3 
+
+        for email, user_data in rest_friends_all_data.items():
+            # Skip if user already friend with me so I don't want to follow him 
+            # Skip own user so you can't follow yourself
+            if email in current_user['friend_list'] or email == current_user['email']:
+                continue
+
+            if col % max_cols == 0:
+                row += 1
+                col = 0
+
+            user_frame = tkinter.LabelFrame(second_frame, bg="#f5f5f5", text=email, padx=50, pady=10, highlightbackground='red', highlightthickness=2)
+            user_frame.grid(row=row, column=col, padx=10, pady=10, sticky="w")
+
+            # These are for display data
+            max_label_length = 0
+            label_count = 0
+
+            for user_key, user_value in user_data.items():
+
+                # Skip these data because it not makes sense to display password
+                if user_key in ['term_policy', 'password', 'email']:
+                    continue
+
+                # Stop display other data 
+                if user_data['isActive'] == True:
+                    break
+
+                if user_key == 'friend_list' and len(user_value) > 2:
+                    label = tkinter.Label(user_frame, text=f"{user_key}: {list(user_value)[:2]}", font=("Arial", 12), bg="#f5f5f5", wraplength=200, justify="left")
+                    label.grid(sticky="w", pady=5)
+                    # Display friend list manually by see more anchor
+                    anchor = tkinter.Label(user_frame, text="See more...", font=("Arial", 12), fg="blue", cursor="hand2")
+                    anchor.grid(row=12, column=0, sticky="w", pady=5)
+                    label_count += 1
+
+                    # Add functionality for see more
+                    anchor.bind("<Button-1>", lambda e, user_value=user_value: self.swich_to_friendList_for_friend( self.full_friend_frame, user_value, current_user))
+                    label_count += 1
+                    continue
+
+                label = tkinter.Label(user_frame, text=f"{user_key}: {user_value}", font=("Arial", 12), bg="#f5f5f5", wraplength=200, justify="left")
+                label.grid(sticky="w", pady=5)
+                label_count += 1
+
+                label_length = len(f"{user_key}: {user_value}")
+                if label_length > max_label_length:
+                    max_label_length = label_length
+
+            follow_btn = tkinter.Button(user_frame, text="Follow", bg="blue", fg="white", command=lambda user=user_data: self.trigger_follow(current_user, user), cursor="hand2")
+            follow_btn.grid(padx=10, pady=5, sticky="ew")
+
+            frame_height = 300 + (label_count * 20)
+            back_btn = tkinter.Button(second_frame, text="Back", bg="silver", fg="black", command=lambda : self.backToFollowPage(current_user), cursor="hand2")
+            back_btn.grid(row=5, column= 1, sticky='news', pady=20)
+            user_frame.grid_propagate(False)
+            user_frame.config(width=300, height=frame_height)
+
+            col += 1
+        ##################################################
+        #                  backtoFollow                  #
+        ##################################################
+
+    def backToFollowPage(self, current_user):
+        self.full_friend_frame.destroy()
+        self.followPage(current_user)
         ##################################################
         #                  backToProfile                 #
         ##################################################
@@ -600,19 +769,21 @@ class NewUser:
         #                  handleFilter                  #
         ##################################################
 
-    def handleFilter(self, current_user, searching_by):
-        if searching_by == 'reset':
-            self.followPage(current_user, self.user_data)
+    # def handleFilter(self, current_user, searching_by):
+    #     if searching_by == 'reset':
+    #         self.followPage(current_user, self.user_data)
+    #         return
         
-        #that's mean values for current_user with this seaching_by == None or empty so we cann't filter bysomething i did'nt even have it
-        if not current_user[searching_by]:
-           return tkinter.messagebox.showwarning(title="Filter result" , message=f"You didn't even have {searching_by} data")
-
-        result = self.friend.dfsSearch(current_user['email'], searching_by, current_user[searching_by])
-        if result :
-            self.followPage(current_user, result)
-        else:
-            tkinter.messagebox.showinfo(title="Filter result" , message=f"No one share with you the same {searching_by}...because you're AWESOME!!!")
+    #     #that's mean values for current_user with this seaching_by == None or empty so we cann't filter by something i did'nt even have it
+    #     if not current_user[searching_by]:
+    #        return tkinter.messagebox.showwarning(title="Filter result" , message=f"You didn't even have {searching_by} data")
+        
+    #     result = self.friend.dfsSearch(current_user['email'], searching_by, current_user[searching_by])
+    #     print("result : ", result)
+    #     if result :
+    #         self.followPage(current_user, result)
+    #     else:
+    #         tkinter.messagebox.showinfo(title="Filter result" , message=f"No one share with you the same {searching_by}...because you're AWESOME!!!")
 
         ##################################################
         #                  FOllow function               #
@@ -623,33 +794,30 @@ class NewUser:
         result = self.friend.follow(current_user_email, user_to_follow_email)
         
         tkinter.messagebox.showinfo(title="Follow Result", message=result)
-        self.friend.displayFriendList()
-
+        self.followPage(current_user_email)
 
 
 
 def main():
     app = NewUser()
-    # app .addUser()
-    app.followPage( {
-    "fullname": "aboud",
+    app .followPage({
+    "fullname": "samir",
     "age": "13",
     "gender": "Male",
-    "email": "aboud1@gmail.com",
-    "password": "Aboud123!",
+    "email": "sami1@gmail.com",
+    "password": "Samir123!",
     "nationality": "Afghanistan",
     "hobbies": None,
     "bio": None,
     "term_policy": "1",
-    "friend_list": {
-      "aboud4@gmail.com": "aboud4@gmail.com",
-      "aboud5@gmail.com": "aboud5@gmail.com",
-      "aboud2@gmail.com": "aboud2@gmail.com",
-      "aboud3@gmail.com": "aboud3@gmail.com",
-      "aboud6@gmail.com": "aboud6@gmail.com",
-      "aboud7@gmail.com": "aboud7@gmail.com",
-    },
+    "friend_count": 0,
     "isActive": False,
-    "friend_count": 6
+    "friend_list": {
+      "ahmad1@gmail.com": "ahmad1@gmail.com",
+      "sami1@gmail.com": "sami1@gmail.com",
+      "miral1@gmail.com": "miral1@gmail.com",
+      "malak1@gmail.com": "malak1@gmail.com",
+      "sarah1@gmail.com": "sarah1@gmail.com"
+    }
   })
 main()
