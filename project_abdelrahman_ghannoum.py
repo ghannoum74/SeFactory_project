@@ -169,7 +169,7 @@ class FriendshipCommunity:
             return True
         else :
             return False
-        
+
     def displayFriendList(self):
         
         if self.adj_list == {}:
@@ -206,17 +206,31 @@ class FriendshipCommunity:
 
     def login(self, email, password):
         with open('userDB.json', 'r') as file:
-            users = json.load(file)
-        if email in users:
-            if password == users[email]['password']:
-        #set is active true
-                users[email]['isActive'] = True
-        #return data for user
-                return users[email]
+            users_data = json.load(file)
+        if email in users_data:
+            if password == users_data[email]['password']:
+                if not  users_data[email]['isActive'] == True:
+                    users_data[email]['isActive'] = True
+                    with open('userDB.json', 'w') as file:
+                        json.dump(users_data, file)
+    # because i cannot update directly i should update in the dat\a base so i want to the data be up to date
+    # so i refresh the data so when i come back and log in the data are refreshed and up to date to the activity become False or True and it re render in the page
+                self.refresh()
+                return users_data[email]
             else:
                 return False
         else:
             return False
+        
+    def logout(self, current_user):
+        if current_user['email'] in self.adj_list:
+            self.adj_list[current_user['email']].isActive = False
+            
+        with open('userDB.json', 'r') as file:
+           users_data = json.load(file)
+        users_data[current_user['email']]['isActive'] = False
+        with open('userDB.json', 'w') as file:
+            json.dump(users_data, file)
 
     def loadUser(self, user_data):
         with open("userDB.json", 'r') as file:
@@ -240,3 +254,30 @@ class FriendshipCommunity:
                     self.dfsSearch(neighbor_node['email'], searching_by, searching_value, visited, result)
         return result
     
+    def dfsActiveUsers(self,start_node ,visited= None, result= None):
+        if visited == None:
+            visited = set()
+        if result == None:
+            result = {}
+
+        visited.add(start_node)
+    #check if there is friend first
+        if start_node in self.adj_list and self.adj_list[start_node].displayFriends():
+            for neighbor in self.adj_list[start_node].displayFriends():
+                if neighbor['isActive'] and neighbor['email'] not in visited:
+                    result[neighbor['email']] = neighbor
+                    self.dfsActiveUsers(neighbor['email'], visited, result)
+            return result
+        return "no friends"
+
+
+    def refresh(self):
+        with open('userDB.json', 'r') as file:
+            users_data = json.load(file)
+        for user in users_data:
+            self.adj_list[user] = FriendsList()
+            if users_data[user]['friend_list']:
+                    for follower_key, follower_data in users_data[user]['friend_list'].items():
+                        self.adj_list[user].reloadRelations(users_data[follower_data])
+        print("------------------------------------------------------------------------------------")
+        self.displayFriendList()
