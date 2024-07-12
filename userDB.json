@@ -1,84 +1,95 @@
 {
   "aboud1@gmail.com": {
-    "fullname": "aboudo",
+    "fullname": "aboud",
     "age": "13",
     "gender": "Male",
     "email": "aboud1@gmail.com",
     "password": "Aboud123!",
     "nationality": "Afghanistan",
-    "hobbies": null,
+    "hobbies": "swiming",
     "bio": null,
-    "term_policie": "1",
-    "friend_count": 0,
-    "friend_list": {
-      "1": "aboud2@gmail.com",
-      "2": "aboud3@gmail.com",
-      "3": "aboud4@gmail.com",
-      "4": "aboud5@gmail.com"
-    },
+    "term_policy": "1",
+    "friend_count": 3,
     "isActive": false,
-    "fiend_count": 4
-  },
-  "aboud2@gmail.com": {
-    "fullname": "aboudT",
-    "age": "13",
-    "gender": "Male",
-    "email": "aboud2@gmail.com",
-    "password": "Aboud123!",
-    "nationality": "Afghanistan",
-    "hobbies": null,
-    "bio": null,
-    "term_policie": "1",
-    "friend_count": 0,
     "friend_list": {
-      "1": "aboud1@gmail.com",
-      "2": "aboud3@gmail.com",
-      "3": "aboud4@gmail.com",
-      "4": "aboud5@gmail.com"
-    },
+      "ahmad1@gmail.com": "ahmad1@gmail.com",
+      "mhamad1@gmail.com": "mhamad1@gmail.com",
+      "kahil1@gmail.com": "kahil1@gmail.com"
+    }
+  },
+  "ahmad1@gmail.com": {
+    "fullname": "ahmad",
+    "age": "13",
+    "gender": "Male",
+    "email": "ahmad1@gmail.com",
+    "password": "Ahmad123!",
+    "nationality": "Afghanistan",
+    "hobbies": "swiming",
+    "bio": null,
+    "term_policy": "1",
+    "friend_count": 0,
     "isActive": false,
-    "fiend_count": 4
+    "friend_list": {}
   },
-  "aboud3@gmail.com": {
-    "fullname": "aboudTH",
+  "mhamad1@gmail.com": {
+    "fullname": "mhamad",
     "age": "13",
     "gender": "Male",
-    "email": "aboud3@gmail.com",
-    "password": "Aboud123!",
+    "email": "mhamad1@gmail.com",
+    "password": "Mhamad123!",
+    "nationality": "Afghanistan",
+    "hobbies": "swiming",
+    "bio": null,
+    "term_policy": "1",
+    "friend_count": 0,
+    "isActive": false,
+    "friend_list": {}
+  },
+  "kahil1@gmail.com": {
+    "fullname": "kahil",
+    "age": "13",
+    "gender": "Male",
+    "email": "kahil1@gmail.com",
+    "password": "Kahil1@23!",
+    "nationality": "Albania",
+    "hobbies": "reading",
+    "bio": null,
+    "term_policy": "1",
+    "friend_count": 0,
+    "isActive": false,
+    "friend_list": {}
+  },
+  "jihad1@gmail.com": {
+    "fullname": "jihad",
+    "age": "13",
+    "gender": "Male",
+    "email": "jihad1@gmail.com",
+    "password": "Jihad123!",
+    "nationality": "Albania",
+    "hobbies": null,
+    "bio": null,
+    "term_policy": "1",
+    "friend_count": 0,
+    "isActive": false,
+    "friend_list": {}
+  },
+  "salem1@gmail.com": {
+    "fullname": "salem",
+    "age": "13",
+    "gender": "Male",
+    "email": "salem1@gmail.com",
+    "password": "Salem123!",
     "nationality": "Afghanistan",
     "hobbies": null,
     "bio": null,
-    "term_policie": "1",
-    "friend_count": 0,
-    "friend_list": {},
-    "isActive": false
-  },
-  "aboud4@gmail.com": {
-    "fullname": "aboudF",
-    "age": "13",
-    "gender": "Male",
-    "email": "aboud4@gmail.com",
-    "password": "Aboud123!",
-    "nationality": "Afghanistan",
-    "hobbies": null,
-    "bio": null,
-    "term_policie": "1",
-    "friend_count": 0,
-    "friend_list": {},
-    "isActive": false
-  },
-  "aboud5@gmail.com": {
-    "fullname": "aboudFI",
-    "age": "13",
-    "gender": "Male",
-    "email": "aboud5@gmail.com",
-    "password": "Aboud123!",
-    "nationality": "Afghanistan",
-    "hobbies": null,
-    "bio": null,
-    "term_policie": "1",
-    "friend_count": 0,
-    "friend_list": {},
-    "isActive": false
+    "term_policy": "1",
+    "friend_count": 4,
+    "isActive": false,
+    "friend_list": {
+      "aboud1@gmail.com": "aboud1@gmail.com",
+      "ahmad1@gmail.com": "ahmad1@gmail.com",
+      "kahil1@gmail.com": "kahil1@gmail.com",
+      "mhamad1@gmail.com": "mhamad1@gmail.com"
+    }
   }
 }
